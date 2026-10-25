@@ -27,7 +27,7 @@ async def get_current_transactions(user_id: int, db: Session = Depends(get_db)):
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Unable to create transaction.",  # dont be too specific about the error message for security reasons
+            detail="Unable to get transactions.",  # dont be too specific about the error message for security reasons
         )
 
     transactions = (
