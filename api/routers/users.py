@@ -101,3 +101,18 @@ async def create_user(user_body: CreateUser, db: Session = Depends(get_db)):
         "email": user.email,
         "created_at": user.created_at,
     }
+
+
+@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(id: int, db: Session = Depends(get_db)):
+
+    user = db.query(User).filter_by(id=id).first()
+
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {id} not found",
+        )
+
+    db.delete(user)
+    db.commit()

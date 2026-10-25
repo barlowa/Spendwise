@@ -10,6 +10,9 @@ class User(Base):
     transactions: Mapped[list["Transaction"]] = relationship(
         "Transaction",
         back_populates="user",
+        # if the user gets deleted, their transactions will also be deleted automatically with the foreign key constraint on the transactions table.
+        # This is a good practice to avoid orphaned records in the database.
+        cascade="all, delete-orphan",
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
