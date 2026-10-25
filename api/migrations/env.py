@@ -16,7 +16,7 @@ from db.base import Base
 from models.user import User
 from models.transaction import Transaction
 
-load_dotenv(Path(__file__).resolve().parents[2] / "config" / ".env")
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
