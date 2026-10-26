@@ -62,7 +62,6 @@ POSTGRES_PORT=5432
 DATABASE_URL=postgresql+psycopg://spendwise:spendwise_dev_password@localhost:5432/spendwise
 AUTH0_DOMAIN=""
 API_AUDIENCE=""
-ALGORITHMS=["RS256"]
 
 #front end config - front end vars must start with VITE
 VITE_AUTH0_DOMAIN=""
