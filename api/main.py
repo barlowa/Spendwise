@@ -33,7 +33,4 @@ def auth_test(current_user: User = Depends(get_current_user)):
 
     return {
         "message": "Authentication successful",
-        "user_id": current_user.id,
-        "name": current_user.name,
-        "email": current_user.email,
     }
