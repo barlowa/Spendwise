@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from core.security import hash_password
 from sqlalchemy.orm import Session
 from db.dependencies import get_db
 
@@ -22,8 +21,7 @@ async def get_user(id: int | None = None, db: Session = Depends(get_db)):
 
     return {
         "id": id,
-        "first_name": user_by_id.first_name,
-        "last_name": user_by_id.last_name,
+        "name": user_by_id.name,
         "email": user_by_id.email,
         "created_at": user_by_id.created_at,
     }
@@ -39,8 +37,7 @@ async def get_all_users(db: Session = Depends(get_db)):
     return [
         UserResponse(
             id=user.id,
-            first_name=user.first_name,
-            last_name=user.last_name,
+            name=user.name,
             email=user.email,
             created_at=user.created_at,
         )
@@ -61,20 +58,10 @@ async def create_user(user_body: CreateUser, db: Session = Depends(get_db)):
         )
 
     # simple validation of the form
-    if (
-        not user_body.first_name
-        or not user_body.last_name
-        or not user_body.email
-        or not user_body.password
-    ):
+    if not user_body.name or not user_body.email:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="All fields are required",
-        )
-    if len(user_body.password) < 8:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Password must be at least 8 characters long",
         )
     if "@" not in user_body.email or "." not in user_body.email:
         raise HTTPException(
@@ -83,11 +70,8 @@ async def create_user(user_body: CreateUser, db: Session = Depends(get_db)):
         )
 
     user = User(
-        first_name=user_body.first_name,
-        last_name=user_body.last_name,
+        name=user_body.name,
         email=user_body.email,
-        # store the password as a hashed value for security
-        password=hash_password(user_body.password),
     )
 
     db.add(user)
@@ -96,8 +80,7 @@ async def create_user(user_body: CreateUser, db: Session = Depends(get_db)):
 
     return {
         "id": user.id,
-        "first_name": user.first_name,
-        "last_name": user.last_name,
+        "name": user.name,
         "email": user.email,
         "created_at": user.created_at,
     }
