@@ -7,4 +7,6 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  // .env file is in the root directory
+  envDir: "..",
 });

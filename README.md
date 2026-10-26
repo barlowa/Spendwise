@@ -52,12 +52,23 @@ Replace `<username>` and `<password>` with the credentials configured in `compos
 Example `.env.example`:
 
 ```dotenv
-DATABASE_URL=postgresql+psycopg://username:password@localhost:5432/spendwise
+#db config
 POSTGRES_DB=spendwise
 POSTGRES_USER=spendwise
 POSTGRES_PASSWORD=spendwise_dev_password
-POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
+
+# back end config
+DATABASE_URL=postgresql+psycopg://spendwise:spendwise_dev_password@localhost:5432/spendwise
+AUTH0_DOMAIN=""
+API_AUDIENCE=""
+ALGORITHMS=["RS256"]
+
+#front end config - front end vars must start with VITE
+VITE_AUTH0_DOMAIN=""
+VITE_AUTH0_CLIENT_ID=""
+VITE_AUTH0_AUDIENCE=""
+VITE_AUTH0_CALLBACK_URL=""
 ```
 
 ### 3. Initialise the database
