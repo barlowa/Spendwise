@@ -1,10 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from db.dependencies import get_db
-
+from services.auth0_management import get_management_token
+import requests
 from models.user import User
 from schemas.user import UserResponse
 from auth import get_current_user
+from utils import env_var
+
+AUTH0_DOMAIN = env_var("API_AUTH0_DOMAIN")
 
 router = APIRouter(prefix="/user", tags=["User"])
 
@@ -66,5 +70,25 @@ async def delete_user(
             detail=f"User with not found",
         )
 
-    db.delete(current_user)
-    db.commit()
+    # get an auth0 management token to talk to the management api
+    management_token = get_management_token()
+    auth0_sub = current_user.auth0_sub
+
+    # delete the auth0 account
+    response = requests.delete(
+        f"https://{AUTH0_DOMAIN}/api/v2/users/"
+        f"{requests.utils.quote(auth0_sub, safe='')}",
+        headers={"Authorization": f"Bearer {management_token}"},
+        timeout=10,
+    )
+
+    if not response.ok:
+        print("Delete status:", response.status_code)
+        print("Delete error:", response.text)
+
+    response.raise_for_status()
+
+    # remove the users account from our system
+    if response.status_code == 204:
+        db.delete(current_user)
+        db.commit()
