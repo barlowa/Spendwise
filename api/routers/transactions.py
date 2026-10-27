@@ -8,6 +8,7 @@ from schemas.transaction import (
 )
 from db.dependencies import get_db
 from sqlalchemy.orm import Session
+from auth import get_current_user
 
 router = APIRouter(
     prefix="/transactions",
@@ -20,19 +21,13 @@ router = APIRouter(
 @router.get(
     "", response_model=list[TransactionResponse], status_code=status.HTTP_200_OK
 )
-async def get_current_transactions(user_id: int, db: Session = Depends(get_db)):
-
-    # look for the user, if ones not found, raise an exception with a 404 status code
-    user = db.query(User).filter_by(id=user_id).first()
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Unable to get transactions.",  # dont be too specific about the error message for security reasons
-        )
-
+async def get_current_transactions(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     transactions = (
         db.query(Transaction)
-        .filter_by(user_id=user_id)
+        .filter_by(user_id=user.id)
         .order_by(Transaction.created_at.desc())
         .all()
     )
@@ -44,20 +39,14 @@ async def get_current_transactions(user_id: int, db: Session = Depends(get_db)):
     "", response_model=TransactionResponse, status_code=status.HTTP_201_CREATED
 )
 async def create_transaction(
-    transaction_body: TransactionRequest, user_id: int, db: Session = Depends(get_db)
+    transaction_body: TransactionRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    # look for the user, if ones not found, raise an exception with a 404 status code
-    user = db.query(User).filter_by(id=user_id).first()
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Unable to create transaction.",  # dont be too specific about the error message for security reasons
-        )
-
     transaction = Transaction(
         description=transaction_body.description,
         amount=transaction_body.amount,
-        user_id=user_id,
+        user_id=user.id,
     )
 
     db.add(transaction)
@@ -70,20 +59,12 @@ async def create_transaction(
 @router.patch("")
 async def update_transaction(
     transaction_id: int,
-    user_id: int,
     transaction_body: TransactionUpdate,
+    user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    # look for the user, if ones not found, raise an exception with a 404 status code
-    user = db.query(User).filter_by(id=user_id).first()
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Unable to modify transaction.",  # dont be too specific about the error message for security reasons
-        )
-
     transaction = (
-        db.query(Transaction).filter_by(id=transaction_id, user_id=user_id).first()
+        db.query(Transaction).filter_by(id=transaction_id, user_id=user.id).first()
     )
 
     if transaction is None:
@@ -107,19 +88,13 @@ async def update_transaction(
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_transaction(
-    transaction_id: int, user_id: int, db: Session = Depends(get_db)
+    transaction_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    # look for the user, if ones not found, raise an exception with a 404 status code
-    user = db.query(User).filter_by(id=user_id).first()
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Unable to delete transaction.",  # dont be too specific about the error message for security reasons
-        )
-
     #  look for the transaction, if ones not found, raise an exception with a 404 status code
     transaction = (
-        db.query(Transaction).filter_by(id=transaction_id, user_id=user_id).first()
+        db.query(Transaction).filter_by(id=transaction_id, user_id=user.id).first()
     )
 
     if transaction is None:
