@@ -5,12 +5,15 @@ Spendwise is a personal finance and expense-tracking application. It is built wi
 ## Tech Stack
 
 - **Frontend:** React Router 8 (Framework Mode)
+- **Frontend Package Management:** `npm`
 - **Backend:** Python, FastAPI
+- **Backend testing** Pytest
+- **Python Package Management:** `uv`
 - **Database:** PostgreSQL
 - **ORM:** SQLAlchemy
 - **Database Migrations:** Alembic
 - **Database Containerisation:** Docker Compose
-- **Python Package Management:** `uv`
+- **Authentication Provider**: Auth0
 
 ## Prerequisites
 
@@ -47,18 +50,9 @@ DATABASE_URL=postgresql+psycopg://<username>:<password>@localhost:5432/spendwise
 
 Replace `<username>` and `<password>` with the credentials configured in `compose.yaml`.
 
-**Note:** The `.env` file contains local configuration and credentials. Do not commit it to Git. Use a `.env.example` file to document the required variables without including real secrets.
+**Note:** The `.env` file contains local configuration and credentials. Do not commit it to Git. Use `.env.example` file for reference and to document any changes to the variables.
 
 Example `.env.example`:
-
-```dotenv
-DATABASE_URL=postgresql+psycopg://username:password@localhost:5432/spendwise
-POSTGRES_DB=spendwise
-POSTGRES_USER=spendwise
-POSTGRES_PASSWORD=spendwise_dev_password
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-```
 
 ### 3. Initialise the database
 
@@ -132,8 +126,14 @@ uv run fastapi dev main.py
 
 The API will typically be available at:
 
-- API: http://127.0.0.1:8000
-- Interactive API documentation: http://127.0.0.1:8000/docs
+- API: http://127.0.0.1:8000 or http://localhost:8000
+- Interactive API documentation: http://127.0.0.1:8000/docs or http://localhost:8000/docs
+
+To run back end unit tests, type this into the terminal
+
+```bash
+uv run pytest -v
+```
 
 ### Frontend
 
@@ -143,7 +143,8 @@ From the directory containing the frontend's `package.json`:
 npm run dev
 ```
 
-Open the local URL printed by the development server.
+Open the local URL printed by the development server, which should be:
+http://localhost:5173/
 
 ## Database Migrations
 
