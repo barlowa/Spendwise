@@ -47,28 +47,9 @@ DATABASE_URL=postgresql+psycopg://<username>:<password>@localhost:5432/spendwise
 
 Replace `<username>` and `<password>` with the credentials configured in `compose.yaml`.
 
-**Note:** The `.env` file contains local configuration and credentials. Do not commit it to Git. Use a `.env.example` file to document the required variables without including real secrets.
+**Note:** The `.env` file contains local configuration and credentials. Do not commit it to Git. Use `.env.example` file for reference and to document any changes to the variables.
 
 Example `.env.example`:
-
-```dotenv
-#db config
-POSTGRES_DB=spendwise
-POSTGRES_USER=spendwise
-POSTGRES_PASSWORD=spendwise_dev_password
-POSTGRES_PORT=5432
-
-# back end config
-DATABASE_URL=postgresql+psycopg://spendwise:spendwise_dev_password@localhost:5432/spendwise
-AUTH0_DOMAIN=""
-API_AUDIENCE=""
-
-#front end config - front end vars must start with VITE
-VITE_AUTH0_DOMAIN=""
-VITE_AUTH0_CLIENT_ID=""
-VITE_AUTH0_AUDIENCE=""
-VITE_AUTH0_CALLBACK_URL=""
-```
 
 ### 3. Initialise the database
 

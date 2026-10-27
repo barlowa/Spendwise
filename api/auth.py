@@ -3,18 +3,13 @@ from jwt import PyJWKClient
 import requests
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from dotenv import load_dotenv
-from pathlib import Path
-import os
 from sqlalchemy.orm import Session
 from db.dependencies import get_db
 from models.user import User
+from utils import env_var
 
-load_dotenv(Path(__file__).resolve().parents[2] / ".env")
-
-
-AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
-API_AUDIENCE = os.getenv("API_AUDIENCE")
+AUTH0_DOMAIN = env_var("API_AUTH0_DOMAIN")
+API_AUDIENCE = env_var("API_AUDIENCE")
 ALGORITHMS = ["RS256"]
 
 JWKS_URL = f"https://{AUTH0_DOMAIN}/.well-known/jwks.json"
