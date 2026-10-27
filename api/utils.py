@@ -1,17 +1,16 @@
-from dotenv import load_dotenv
-from pathlib import Path
 import os
+from pathlib import Path
 
-load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+from dotenv import load_dotenv
+
+ENV_PATH = Path(__file__).resolve().parents[1] / ".env"
+load_dotenv(ENV_PATH)
 
 
-# get an environment variable
 def env_var(key: str) -> str:
-
-    if key is None:
-        raise TypeError(f"Key must be provided")
     value = os.getenv(key)
 
     if value is None:
         raise ValueError(f"Environment variable not set for {key!r}")
+
     return value

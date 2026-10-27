@@ -5,12 +5,15 @@ Spendwise is a personal finance and expense-tracking application. It is built wi
 ## Tech Stack
 
 - **Frontend:** React Router 8 (Framework Mode)
+- **Frontend Package Management:** `npm`
 - **Backend:** Python, FastAPI
+- **Backend testing** Pytest
+- **Python Package Management:** `uv`
 - **Database:** PostgreSQL
 - **ORM:** SQLAlchemy
 - **Database Migrations:** Alembic
 - **Database Containerisation:** Docker Compose
-- **Python Package Management:** `uv`
+- **Authentication Provider**: Auth0
 
 ## Prerequisites
 
@@ -123,8 +126,14 @@ uv run fastapi dev main.py
 
 The API will typically be available at:
 
-- API: http://127.0.0.1:8000
-- Interactive API documentation: http://127.0.0.1:8000/docs
+- API: http://127.0.0.1:8000 or http://localhost:8000
+- Interactive API documentation: http://127.0.0.1:8000/docs or http://localhost:8000/docs
+
+To run back end unit tests, type this into the terminal
+
+```bash
+uv run pytest -v
+```
 
 ### Frontend
 
@@ -134,7 +143,8 @@ From the directory containing the frontend's `package.json`:
 npm run dev
 ```
 
-Open the local URL printed by the development server.
+Open the local URL printed by the development server, which should be:
+http://localhost:5173/
 
 ## Database Migrations
 
