@@ -1,11 +1,23 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints, field_validator
 from decimal import Decimal
 from datetime import datetime
+from typing import Annotated
+
+# constraints for validation
+Description = Annotated[
+    str,
+    StringConstraints(min_length=1, max_length=255, strip_whitespace=True),
+]
+
+MoneyAmount = Annotated[
+    Decimal,
+    Field(gt=0, max_digits=12, decimal_places=2),
+]
 
 
 class TransactionRequest(BaseModel):
-    description: str
-    amount: Decimal
+    description: Description
+    amount: MoneyAmount
 
 
 class TransactionResponse(BaseModel):
@@ -17,14 +29,13 @@ class TransactionResponse(BaseModel):
 
 
 class TransactionUpdate(BaseModel):
-    description: str | None = Field(
-        default=None,
-        min_length=1,
-        max_length=255,
-    )
-    amount: Decimal | None = Field(
-        default=None,
-        gt=0,
-        max_digits=12,
-        decimal_places=2,
-    )
+    description: Description | None = None
+    amount: MoneyAmount | None = None
+
+    @field_validator("description", "amount")
+    @classmethod
+    # validation to protect from null values being added
+    def reject_explicit_null(cls, value):
+        if value is None:
+            raise ValueError("Field cannot be null")
+        return value
