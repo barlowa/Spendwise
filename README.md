@@ -165,6 +165,66 @@ Apply migrations:
 uv run alembic upgrade head
 ```
 
+## Testing
+
+Spendwise uses `pytest` and FastAPI's `TestClient` to test the API. Tests run against a dedicated PostgreSQL database to keep development data separate from test data.
+
+### Test database setup
+
+1. Start PostgreSQL using Docker Compose:
+
+   ```bash
+   docker compose up -d
+   ```
+
+2. Create the test database if it doesn't already exist. The example below assumes the PostgreSQL service is named `db`, and the PostgreSQL user and development database are both `spendwise`.
+
+   ```bash
+   docker compose exec db psql -U spendwise -d spendwise -c "CREATE DATABASE spendwise_test OWNER spendwise;"
+   ```
+
+   Run this command only once. If the test database already exists, PostgreSQL will report an error.
+
+3. Add the test database connection string to the root `.env` file:
+
+   ```dotenv
+   TEST_DATABASE_URL=postgresql+psycopg://spendwise:YOUR_PASSWORD@localhost:5432/spendwise_test
+   ```
+
+   Replace `YOUR_PASSWORD` with your PostgreSQL password. Keep `.env` out of version control.
+
+   **Important:** Tests must use `TEST_DATABASE_URL`, not `DATABASE_URL`. The test configuration should fail if `TEST_DATABASE_URL` is missing rather than fall back to the development database.
+
+### Running tests
+
+From the `api/` directory, run:
+
+```bash
+uv run pytest -v
+```
+
+Run a specific test file:
+
+```bash
+uv run pytest tests/test_transactions.py -v
+```
+
+Run a single test:
+
+```bash
+uv run pytest tests/test_transactions.py::test_create_transaction -v
+```
+
+### Test isolation
+
+The test fixtures create missing tables in the test database and use a separate database transaction for each test. Transactions are rolled back after each test to help prevent test data from accumulating.
+
+Authentication is mocked in route tests where appropriate, so these tests do not require real Auth0 access tokens.
+
+When adding tests, cover successful requests, invalid input, authentication requirements, and resource ownership. In particular, users must not be able to access or modify another user's transactions.
+
+**Never configure the test suite to use the development or production database.**
+
 ## Development Notes
 
 - Keep secrets and local environment files out of version control.

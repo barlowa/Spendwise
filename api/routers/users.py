@@ -16,12 +16,6 @@ router = APIRouter(prefix="/user", tags=["User"])
 @router.get("", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def get_user(current_user: User = Depends(get_current_user)):
 
-    if current_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User not found",
-        )
-
     return {
         "id": current_user.id,
         "name": current_user.name,
@@ -35,17 +29,9 @@ async def get_user(current_user: User = Depends(get_current_user)):
 )
 async def get_all_users(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
 ):
 
-    if current_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User not found",
-        )
-
     users = db.query(User).all()
-    print(users)
 
     return [
         UserResponse(
@@ -63,13 +49,6 @@ async def delete_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-
-    if current_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with not found",
-        )
-
     # get an auth0 management token to talk to the management api
     management_token = get_management_token()
     auth0_sub = current_user.auth0_sub
