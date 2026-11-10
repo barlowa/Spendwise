@@ -1,28 +1,17 @@
-import {
-  createApiClient,
-  getAccessToken,
-  requireSession,
-} from "@auth0/auth0-react-router/server";
-import { TokenError } from "@auth0/auth0-react-router/errors";
+import { requireSession } from "@auth0/auth0-react-router/server";
 import type { Route } from "./+types/transactions";
+import axios from "axios";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  let token: string;
-  try {
-    token = await getAccessToken(request);
-  } catch (err) {
-    if (err instanceof TokenError) {
-      return new Response(null, {
-        status: 302,
-        headers: { Location: "/auth/login" },
-      });
-    }
-    throw err;
-  }
-  const data = await fetch(`${import.meta.env.VITE_API_URL}/transactions`, {
-    headers: { Authorization: `Bearer ${token}` },
-  }).then((r) => r.json());
-  return { data };
+  await requireSession(request);
+
+  const response = await axios.get("/transactions");
+
+  return response.data;
+};
+
+export const action = async ({ request }: Route.ActionArgs) => {
+  await requireSession(request);
 };
 
 export default function Transactions({ loaderData }: Route.ComponentProps) {
