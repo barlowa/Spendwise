@@ -37,6 +37,7 @@ node_modules/
 dist/
 build/
 *.tsbuildinfo
+.agents/
 
 # Frontend environment variables
 .env.local
