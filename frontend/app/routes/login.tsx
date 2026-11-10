@@ -1,4 +1,4 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react-router";
 
 export function meta() {
   return [
@@ -42,9 +42,7 @@ export default function Login() {
             </p>
             <button
               type="button"
-              onClick={() =>
-                logout({ logoutParams: { returnTo: window.location.origin } })
-              }
+              onClick={() => logout()}
               className="w-full rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2"
             >
               Sign out
@@ -63,7 +61,7 @@ export default function Login() {
               type="button"
               onClick={() =>
                 loginWithRedirect({
-                  authorizationParams: { screen_hint: "signup" },
+                  // authorizationParams: { screen_hint: "signup" },
                 })
               }
               className="w-full rounded-lg border border-emerald-700 px-4 py-2.5 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2"
