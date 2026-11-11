@@ -12,6 +12,11 @@
       "sourceType": "github",
       "skillPath": "skills/heroui-react/SKILL.md",
       "computedHash": "30701672e3efefe0e1fbeaadd118010d18b697db674d87ac24103e0a470064a9"
+    },
+    "vitest-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "computedHash": "9cb1a9880a3d8763b93b8a83634ea31aca1d37ea1d8ca053e7b2c120f8594267"
     }
   }
 }
