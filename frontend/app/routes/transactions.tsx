@@ -1,7 +1,4 @@
-import {
-	getAccessToken,
-	requireSession,
-} from "@auth0/auth0-react-router/server";
+import { requireSession } from "@auth0/auth0-react-router/server";
 import axios from "axios";
 import { Form, useNavigation } from "react-router";
 import type { Route } from "./+types/transactions";
@@ -16,15 +13,6 @@ type Transaction = {
 
 type ActionData = {
 	error?: string;
-};
-
-const getApiConfig = async (request: Request) => {
-	const token = await getAccessToken(request);
-
-	return {
-		baseURL: import.meta.env.VITE_API_URL,
-		headers: { Authorization: `Bearer ${token}` },
-	};
 };
 
 const getFormText = (formData: FormData, key: string) => {
@@ -44,10 +32,7 @@ const getApiError = (error: unknown) => {
 export const loader = async ({ request }: Route.LoaderArgs) => {
 	await requireSession(request);
 
-	const response = await axios.get<Transaction[]>(
-		"/transactions",
-		await getApiConfig(request),
-	);
+	const response = await axios.get<Transaction[]>("/transactions");
 
 	return { transactions: response.data };
 };
@@ -57,7 +42,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 	const formData = await request.formData();
 	const intent = getFormText(formData, "_intent");
-	const config = await getApiConfig(request);
 
 	console.log("intent", intent);
 	try {
@@ -76,7 +60,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 			const body = { description, amount };
 
 			if (intent === "create") {
-				await axios.post("/transactions", body, config);
+				await axios.post("/transactions", body);
 			} else {
 				const transactionId = Number(getFormText(formData, "transaction_id"));
 
@@ -85,7 +69,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
 				}
 
 				await axios.patch("/transactions", body, {
-					...config,
 					params: { transaction_id: transactionId },
 				});
 			}
@@ -101,7 +84,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
 			}
 
 			await axios.delete("/transactions", {
-				...config,
 				params: { transaction_id: transactionId },
 			});
 

@@ -1,5 +1,4 @@
-import { Welcome } from "../welcome/welcome";
-import type { Route } from "./+types/home";
+import { Link } from "@heroui/react";
 
 export function meta() {
 	return [
@@ -8,24 +7,11 @@ export function meta() {
 	];
 }
 
-export function loader() {
-	return "data";
-}
-
-export default function Home({ loaderData }: Route.ComponentProps) {
-	// const { getAccessTokenSilently } = useAuth0();
-
-	async function testToken() {
-		// const token = await getAccessTokenSilently();
-		console.log(loaderData);
-	}
+export default function Home() {
 	return (
-		<>
-			<Welcome />
-			<a href="/transactions">View Transactions</a>
-			<button type="button" onClick={testToken}>
-				test
-			</button>
-		</>
+		<div>
+			<Link href="/transactions">View Transactions</Link>
+			<Link href="/profile">View Profile</Link>
+		</div>
 	);
 }

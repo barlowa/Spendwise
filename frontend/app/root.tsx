@@ -8,7 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import "./app.css";
+import "~/app.css";
 import { Auth0Provider } from "@auth0/auth0-react-router";
 import { rootAuthLoader } from "@auth0/auth0-react-router/server";
 
@@ -29,7 +29,7 @@ export const loader = ({ request }: Route.LoaderArgs) =>
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
+		<html lang="en" data-theme="dark">
 			<head>
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />

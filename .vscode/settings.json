@@ -1,18 +1,21 @@
 {
 	"cSpell.words": [
+		"__pycache__",
 		"autoflush",
 		"dotenv",
+		"figtree",
+		"heroui",
+		"htmlcov",
 		"MGMT",
+		"mypy_cache",
+		"Noto",
+		"oklch",
+		"pytest",
+		"Segoe",
 		"sessionmaker",
 		"Spendwise",
 		"stylesheet",
-		"Segoe",
-		"Noto",
-		"__pycache__",
-		"mypy_cache",
-		"htmlcov",
-		"venv",
-		"pytest"
+		"venv"
 	],
 	"python.testing.pytestArgs": ["api"],
 	"python.testing.unittestEnabled": false,
@@ -51,5 +54,9 @@
 	},
 	"[css]": {
 		"editor.defaultFormatter": "biomejs.biome"
-	}
+	},
+	"[tailwindcss]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"js/ts.preferences.importModuleSpecifier": "non-relative"
 }
