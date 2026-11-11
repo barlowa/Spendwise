@@ -1,0 +1,13 @@
+{
+	"recommendations": [
+		"biomejs.biome",
+		"ms-vscode.vscode-typescript-next",
+		"bradlc.vscode-tailwindcss",
+		"njqdev.vscode-python-typehint",
+		"aaron-bond.better-comments",
+		"streetsidesoftware.code-spell-checker",
+		"formulahendry.auto-close-tag",
+		"formulahendry.auto-rename-tag",
+		"vitest.explorer"
+	]
+}

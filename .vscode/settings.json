@@ -1,0 +1,63 @@
+{
+	"cSpell.words": [
+		"__pycache__",
+		"autoflush",
+		"dotenv",
+		"figtree",
+		"heroui",
+		"htmlcov",
+		"MGMT",
+		"mypy_cache",
+		"Noto",
+		"oklch",
+		"pytest",
+		"Segoe",
+		"sessionmaker",
+		"Spendwise",
+		"stylesheet",
+		"venv",
+		"Vitest"
+	],
+	"python.testing.pytestArgs": ["api"],
+	"python.testing.unittestEnabled": false,
+	"python.testing.pytestEnabled": true,
+	"json.schemaDownload.trustedDomains": {
+		"https://biomejs.dev": true
+	},
+	"biome.configurationPath": "./frontend/biome.json",
+	"biome.lsp.bin": "./frontend/node_modules/.bin/biome",
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.organizeImports.biome": "explicit",
+		"source.fixAll.biome": "explicit"
+	},
+	"files.associations": {
+		"*.server.ts": "typescript",
+		"*.css": "tailwindcss"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[css]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[tailwindcss]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"js/ts.preferences.importModuleSpecifier": "non-relative"
+}

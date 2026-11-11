@@ -1,8 +1,8 @@
 import {
-  type RouteConfig,
   index,
-  route,
   layout,
+  type RouteConfig,
+  route,
 } from "@react-router/dev/routes";
 
 export default [
@@ -13,6 +13,6 @@ export default [
     route("auth/*", "routes/auth/auth.$.tsx"),
     route("home", "routes/home.tsx"),
     route("profile", "routes/profile.tsx"),
-    route("my-transactions", "routes/transactions.tsx"),
+    route("transactions", "routes/transactions.tsx"),
   ]),
 ] satisfies RouteConfig;
