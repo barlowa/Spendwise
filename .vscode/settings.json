@@ -15,7 +15,8 @@
 		"sessionmaker",
 		"Spendwise",
 		"stylesheet",
-		"venv"
+		"venv",
+		"Vitest"
 	],
 	"python.testing.pytestArgs": ["api"],
 	"python.testing.unittestEnabled": false,

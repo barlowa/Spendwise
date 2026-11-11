@@ -6,7 +6,8 @@
 		"build": "react-router build",
 		"dev": "react-router dev",
 		"start": "react-router-serve ./build/server/index.js",
-		"typecheck": "react-router typegen && tsc"
+		"typecheck": "react-router typegen && tsc",
+		"test": "vitest"
 	},
 	"dependencies": {
 		"@auth0/auth0-react-router": "^1.0.0-beta.2",
@@ -30,6 +31,7 @@
 		"@types/react-dom": "^19.2.7",
 		"tailwindcss": "^4.2.2",
 		"typescript": "^5.9.3",
-		"vite": "^8.0.3"
+		"vite": "^8.0.3",
+		"vitest": "^3.2.7"
 	}
 }

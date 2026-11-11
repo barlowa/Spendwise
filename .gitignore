@@ -42,6 +42,9 @@ build/
 .react-router/
 build/
 
+# Vitest reports and artifacts
+.vitest/
+
 
 # Frontend environment variables
 .env.local
