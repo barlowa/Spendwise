@@ -1,19 +1,21 @@
 # Spendwise
 
-Spendwise is a personal finance and expense-tracking application. It is built with React Router, FastAPI, and PostgreSQL.
+Spendwise is a personal finance and expense-tracking application built with React Router, FastAPI and PostgreSQL.
 
 ## Tech Stack
 
-- **Frontend:** React Router 8 (Framework Mode)
-- **Frontend Package Management:** `npm`
-- **Backend:** Python, FastAPI
-- **Backend testing** Pytest
-- **Python Package Management:** `uv`
-- **Database:** PostgreSQL
-- **ORM:** SQLAlchemy
-- **Database Migrations:** Alembic
-- **Database Containerisation:** Docker Compose
-- **Authentication Provider**: Auth0
+| Component                   | Technology                      |
+| --------------------------- | ------------------------------- |
+| Frontend                    | React Router 8 (Framework Mode) |
+| Frontend package management | npm                             |
+| Backend                     | Python, FastAPI                 |
+| Backend testing             | Pytest                          |
+| Python package management   | uv                              |
+| Database                    | PostgreSQL                      |
+| ORM                         | SQLAlchemy                      |
+| Database migrations         | Alembic                         |
+| Database containerisation   | Docker Compose                  |
+| Authentication              | Auth0                           |
 
 ## Prerequisites
 
@@ -23,6 +25,7 @@ Install the following before setting up the project:
 - [Node.js and npm](https://nodejs.org/)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [uv](https://docs.astral.sh/uv/)
+- [Visual Studio Code](https://code.visualstudio.com/) (recommended)
 
 ## Getting Started
 
@@ -35,28 +38,41 @@ cd Spendwise
 
 ### 2. Configure environment variables
 
-Create a `.env` file inside the `config/` directory.
+Create a `.env` file in the project root.
 
 ```bash
-mkdir -p config
-touch config/.env
+touch .env
 ```
 
-Add your database connection string:
+Reference `.env.example` for the required environment variables and their expected values.
 
-```dotenv
-DATABASE_URL=postgresql+psycopg://<username>:<password>@localhost:5432/spendwise
+**Important:**
+
+- Keep `.env` out of version control.
+- Use `.env.example` to document required environment variables.
+- Never commit credentials, secrets or access tokens.
+
+### 3. Install dependencies
+
+**Backend**
+
+```bash
+cd api
+uv sync
+cd ..
 ```
 
-Replace `<username>` and `<password>` with the credentials configured in `compose.yaml`.
+**Frontend**
 
-**Note:** The `.env` file contains local configuration and credentials. Do not commit it to Git. Use `.env.example` file for reference and to document any changes to the variables.
+```bash
+cd frontend
+npm install
+cd ..
+```
 
-Example `.env.example`:
+### 4. Initialise the database
 
-### 3. Initialise the database
-
-From the project root, start PostgreSQL:
+Start PostgreSQL:
 
 ```bash
 docker compose up -d
@@ -68,47 +84,61 @@ Check that the database container is running:
 docker compose ps
 ```
 
-### 4. Set up the API
+### 5. Apply database migrations
 
-Navigate to the API directory:
+From the project root:
 
 ```bash
 cd api
-```
-
-Install the Python dependencies:
-
-```bash
-uv sync
-```
-
-Apply the database migrations:
-
-```bash
 uv run alembic upgrade head
-```
-
-Return to the project root when finished:
-
-```bash
 cd ..
 ```
 
-### 5. Set up the frontend
-
-From the project root, install the frontend dependencies:
-
-```bash
-npm install
-```
-
-This assumes the frontend's `package.json` is in the repository root. If it lives in a separate directory, run the command from that directory instead.
+Your development database should now be ready.
 
 ## Running the Project
 
-Start each part of the application in a separate terminal.
+### Recommended: VS Code Tasks
 
-### Database
+Spendwise includes VS Code tasks to simplify starting and managing the development environment.
+
+The tasks are configured in:
+
+```text
+.vscode/tasks.json
+```
+
+To start the entire application:
+
+1. Open the Spendwise project in VS Code.
+2. Open the Command Palette (`Ctrl + Shift + P`).
+3. Select `Tasks: Run Task`.
+4. Select `Start Everything`.
+
+This starts:
+
+| Service  | Command                      | Working directory |
+| -------- | ---------------------------- | ----------------- |
+| Database | `docker compose up -d`       | Project root      |
+| API      | `uv run fastapi dev main.py` | `api/`            |
+| Frontend | `npm run dev`                | `frontend/`       |
+
+Each application process runs in its own VS Code terminal.
+
+Individual tasks can also be run through `Tasks: Run Task`:
+
+- `Start Database`
+- `Start API`
+- `Start Frontend`
+- `Start App`
+- `Start Everything`
+- `Stop Database`
+
+### Manual startup
+
+Alternatively, each service can be started manually in a separate terminal.
+
+**Database**
 
 From the project root:
 
@@ -116,7 +146,7 @@ From the project root:
 docker compose up -d
 ```
 
-### API
+**API**
 
 From the `api/` directory:
 
@@ -124,80 +154,91 @@ From the `api/` directory:
 uv run fastapi dev main.py
 ```
 
-The API will typically be available at:
+The API should be available at:
 
-- API: http://127.0.0.1:8000 or http://localhost:8000
-- Interactive API documentation: http://127.0.0.1:8000/docs or http://localhost:8000/docs
+- API: http://localhost:8000
+- Interactive API documentation: http://localhost:8000/docs
 
-To run back end unit tests, type this into the terminal
+**Frontend**
 
-```bash
-uv run pytest -v
-```
-
-### Frontend
-
-From the directory containing the frontend's `package.json`:
+From the `frontend/` directory:
 
 ```bash
 npm run dev
 ```
 
-Open the local URL printed by the development server, which should be:
+The frontend should be available at:
+
 http://localhost:5173/
+
+The actual frontend port may differ depending on the Vite configuration.
 
 ## Database Migrations
 
 Spendwise uses Alembic to manage database schema changes.
 
-Create a migration after updating SQLAlchemy models:
+### Creating a migration
+
+After updating SQLAlchemy models, generate a migration:
 
 ```bash
 cd api
 uv run alembic revision --autogenerate -m "describe your change"
 ```
 
-Review the generated migration before applying it.
+Review the generated migration before applying it. Autogenerated migrations are not guaranteed to be correct.
 
-Apply migrations:
+### Applying migrations
 
 ```bash
 uv run alembic upgrade head
 ```
 
+### Rolling back a migration
+
+To revert the most recent migration:
+
+```bash
+uv run alembic downgrade -1
+```
+
 ## Testing
 
-Spendwise uses `pytest` and FastAPI's `TestClient` to test the API. Tests run against a dedicated PostgreSQL database to keep development data separate from test data.
+Spendwise uses Pytest and FastAPI's `TestClient` to test the API.
+
+Tests run against a dedicated PostgreSQL database to keep development data separate from test data.
 
 ### Test database setup
 
-1. Start PostgreSQL using Docker Compose:
+1. Start PostgreSQL:
 
    ```bash
    docker compose up -d
    ```
 
-2. Create the test database if it doesn't already exist. The example below assumes the PostgreSQL service is named `db`, and the PostgreSQL user and development database are both `spendwise`.
+2. Create the test database if it doesn't already exist.
+
+   The following assumes the PostgreSQL service is named `db`, and the PostgreSQL user is `spendwise`:
 
    ```bash
    docker compose exec db psql -U spendwise -d spendwise -c "CREATE DATABASE spendwise_test OWNER spendwise;"
    ```
 
-   Run this command only once. If the test database already exists, PostgreSQL will report an error.
+   Run this command only once.
 
-3. Add the test database connection string to the root `.env` file:
+3. Configure `TEST_DATABASE_URL` in the root `.env` file.
 
    ```dotenv
    TEST_DATABASE_URL=postgresql+psycopg://spendwise:YOUR_PASSWORD@localhost:5432/spendwise_test
    ```
 
-   Replace `YOUR_PASSWORD` with your PostgreSQL password. Keep `.env` out of version control.
+**Important:** Tests must use `TEST_DATABASE_URL`, never `DATABASE_URL`.
 
-   **Important:** Tests must use `TEST_DATABASE_URL`, not `DATABASE_URL`. The test configuration should fail if `TEST_DATABASE_URL` is missing rather than fall back to the development database.
+The test configuration should fail if `TEST_DATABASE_URL` is missing rather than falling back to the development database.
 
 ### Running tests
 
-From the `api/` directory, run:
+From the `api/` directory:
 
 ```bash
 uv run pytest -v
@@ -217,17 +258,51 @@ uv run pytest tests/test_transactions.py::test_create_transaction -v
 
 ### Test isolation
 
-The test fixtures create missing tables in the test database and use a separate database transaction for each test. Transactions are rolled back after each test to help prevent test data from accumulating.
+- Test fixtures create missing tables in the test database.
+- Each test uses a separate database transaction.
+- Transactions are rolled back after each test to prevent test data from accumulating.
+- Authentication is mocked in route tests where appropriate, so real Auth0 access tokens are not required.
 
-Authentication is mocked in route tests where appropriate, so these tests do not require real Auth0 access tokens.
+When adding tests, cover:
 
-When adding tests, cover successful requests, invalid input, authentication requirements, and resource ownership. In particular, users must not be able to access or modify another user's transactions.
+- Successful requests.
+- Invalid input and validation errors.
+- Authentication requirements.
+- Resource ownership and authorisation.
+
+In particular, users must never be able to access or modify another user's transactions.
 
 **Never configure the test suite to use the development or production database.**
 
 ## Development Notes
 
 - Keep secrets and local environment files out of version control.
-- Use Alembic migrations to manage database schema changes rather than editing the schema manually.
+- Use Alembic migrations to manage database schema changes.
+- Review autogenerated migrations before applying them.
 - Keep request and response schemas separate from SQLAlchemy models.
 - Never return password hashes in API responses.
+- Validate resource ownership on all user-specific endpoints.
+- Keep frontend and backend dependencies up to date.
+- Write automated tests when introducing new functionality.
+
+## Shutting Down
+
+To stop the development environment:
+
+**Stop the API and frontend** using `Ctrl + C` in their respective terminals.
+
+**Stop PostgreSQL** from the project root:
+
+```bash
+docker compose down
+```
+
+This stops and removes the containers but preserves the database volume and its data.
+
+To completely remove the database volume as well:
+
+```bash
+docker compose down -v
+```
+
+**Warning:** This permanently deletes the PostgreSQL data stored in the Docker volume. Only use this when you intentionally want to reset the database.
