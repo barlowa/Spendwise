@@ -1,6 +1,6 @@
 import { Chip } from "@heroui/react";
 import { HiOutlineBanknotes } from "react-icons/hi2";
-import type { Transaction } from "~/routes/transactions/types";
+import type { Transaction } from "~/features/transactions/types";
 
 interface Props {
 	transactions?: Transaction[];

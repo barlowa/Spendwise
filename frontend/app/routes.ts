@@ -6,13 +6,13 @@ import {
 } from "@react-router/dev/routes";
 
 export default [
-  route("/login", "routes/login.tsx"),
-  index("routes/index.tsx"),
+  route("/login", "features/auth/login.tsx"),
+  index("features/index.tsx"),
 
-  layout("routes/auth/layout.tsx", [
-    route("auth/*", "routes/auth/auth.$.tsx"),
-    route("home", "routes/home.tsx"),
-    route("profile", "routes/profile.tsx"),
-    route("transactions", "routes/transactions/index.tsx"),
+  layout("features/auth/layout.tsx", [
+    route("auth/*", "features/auth/auth.$.tsx"),
+    route("home", "features/home/index.tsx"),
+    route("profile", "features/profile/index.tsx"),
+    route("transactions", "features/transactions/index.tsx"),
   ]),
 ] satisfies RouteConfig;

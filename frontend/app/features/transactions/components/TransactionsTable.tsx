@@ -6,7 +6,7 @@ import {
 	HiOutlineTrash,
 } from "react-icons/hi2";
 import { Form } from "react-router";
-import type { Transaction } from "~/routes/transactions/types";
+import type { Transaction } from "~/features/transactions/types";
 
 interface Props {
 	transactions: Transaction[];

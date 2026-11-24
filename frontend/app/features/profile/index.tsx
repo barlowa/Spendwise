@@ -1,6 +1,6 @@
 import { useUser } from "@auth0/auth0-react-router";
 import { requireSession } from "@auth0/auth0-react-router/server";
-import type { Route } from "./+types/profile";
+import type { Route } from "./+types";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
 	await requireSession(request);

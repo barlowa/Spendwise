@@ -1,5 +1,5 @@
 import { handleAuth } from "@auth0/auth0-react-router/server";
-import { auth0 } from "~/routes/auth/auth0.server";
+import { auth0 } from "~/features/auth/auth0.server";
 import type { Route } from "./+types/auth.$";
 
 export const loader = ({ request }: Route.LoaderArgs) =>

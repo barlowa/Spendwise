@@ -1,9 +1,9 @@
 import { requireSession } from "@auth0/auth0-react-router/server";
 import axios from "axios";
 import { useNavigation } from "react-router";
-import CreateTransactionForm from "~/routes/transactions/components/CreateTransactionForm";
-import OverviewHeader from "~/routes/transactions/components/OverviewHeader";
-import TransactionsTable from "~/routes/transactions/components/TransactionsTable";
+import CreateTransactionForm from "~/features/transactions/components/CreateTransactionForm";
+import OverviewHeader from "~/features/transactions/components/OverviewHeader";
+import TransactionsTable from "~/features/transactions/components/TransactionsTable";
 import type {
 	CreateTransactionRequest,
 	CreateTransactionResponse,
@@ -12,7 +12,7 @@ import type {
 	GetTransactionsResponse,
 	UpdateTransactionRequest,
 	UpdateTransactionResponse,
-} from "~/routes/transactions/types";
+} from "~/features/transactions/types";
 import type { Route } from "./+types";
 
 const getFormText = (formData: FormData, key: string) => {
