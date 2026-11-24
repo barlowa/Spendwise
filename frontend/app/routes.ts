@@ -13,6 +13,6 @@ export default [
     route("auth/*", "routes/auth/auth.$.tsx"),
     route("home", "routes/home.tsx"),
     route("profile", "routes/profile.tsx"),
-    route("transactions", "routes/transactions.tsx"),
+    route("transactions", "routes/transactions/index.tsx"),
   ]),
 ] satisfies RouteConfig;
