@@ -1,12 +1,11 @@
 import { useAuth0 } from "@auth0/auth0-react-router";
-import { Avatar, Button, Chip, Spinner } from "@heroui/react";
-import { HiBars2, HiMiniUserCircle } from "react-icons/hi2";
+import { Chip, Spinner } from "@heroui/react";
 import { AuthenticatedBurgerMenu } from "~/components/branding/AuthenticatedBurgerMenu";
 import Logo from "~/components/branding/Logo";
 
 export default function AuthStatusBanner() {
-	const { isAuthenticated, isLoading, user } = useAuth0();
-	const accountName = user?.name ?? user?.email;
+	const { isAuthenticated, isLoading } = useAuth0();
+	// const accountName = user?.name ?? user?.email;
 
 	return (
 		<header className="bg-background/90 backdrop-blur-sm border-b">
