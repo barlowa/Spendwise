@@ -2,6 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react-router";
 import { Chip, Spinner } from "@heroui/react";
 import { AuthenticatedBurgerMenu } from "~/components/branding/AuthenticatedBurgerMenu";
 import Logo from "~/components/branding/Logo";
+import { UnauthenticatedBurgerMenu } from "~/components/branding/UnauthenticatedBurgerMenu";
 
 export default function AuthStatusBanner() {
 	const { isAuthenticated, isLoading } = useAuth0();
@@ -22,7 +23,11 @@ export default function AuthStatusBanner() {
 						</>
 					) : (
 						<>
-							{isAuthenticated && <AuthenticatedBurgerMenu />}
+							{isAuthenticated ? (
+								<AuthenticatedBurgerMenu />
+							) : (
+								<UnauthenticatedBurgerMenu />
+							)}
 
 							{/* {isAuthenticated && accountName && (
 								<span className="max-w-48 truncate text-sm text-muted">

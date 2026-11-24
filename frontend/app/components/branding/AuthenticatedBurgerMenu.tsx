@@ -2,8 +2,10 @@ import { useAuth0 } from "@auth0/auth0-react-router";
 import { Button, Description, Dropdown, Label, Separator } from "@heroui/react";
 import {
 	HiArrowRightEndOnRectangle,
+	HiArrowRightStartOnRectangle,
 	HiBanknotes,
 	HiBars2,
+	HiHome,
 	HiMiniChartBar,
 	HiMiniUserCircle,
 } from "react-icons/hi2";
@@ -18,14 +20,19 @@ export function AuthenticatedBurgerMenu() {
 			<Dropdown.Popover>
 				<Dropdown.Menu>
 					<Dropdown.Section>
+						<Dropdown.Item id="home" textValue="Home" href="/home">
+							<HiHome />
+							<div className="flex flex-col">
+								<Label>Home</Label>
+								<Description>Home dashboard</Description>
+							</div>
+						</Dropdown.Item>
 						<Dropdown.Item
 							id="update-profile"
 							textValue="Update Profile"
 							href="/profile"
 						>
-							<div className="flex h-8 items-start justify-center pt-px">
-								<HiMiniUserCircle className="size-4 shrink-0 text-muted" />
-							</div>
+							<HiMiniUserCircle />
 							<div className="flex flex-col">
 								<Label>User Profile</Label>
 								<Description>View and edit your profile</Description>
@@ -36,18 +43,14 @@ export function AuthenticatedBurgerMenu() {
 							textValue="Transactions"
 							href="/transactions"
 						>
-							<div className="flex h-8 items-start justify-center pt-px">
-								<HiBanknotes className="size-4 shrink-0 text-muted" />
-							</div>
+							<HiBanknotes />
 							<div className="flex flex-col">
 								<Label>Transactions</Label>
 								<Description>Add and remove transactions</Description>
 							</div>
 						</Dropdown.Item>
 						<Dropdown.Item id="reports" textValue="Reports" href="/reports">
-							<div className="flex h-8 items-start justify-center pt-px">
-								<HiMiniChartBar className="size-4 shrink-0 text-muted" />
-							</div>
+							<HiMiniChartBar />
 							<div className="flex flex-col">
 								<Label>Reports</Label>
 								<Description>View your spending report</Description>
@@ -66,9 +69,7 @@ export function AuthenticatedBurgerMenu() {
 								})
 							}
 						>
-							<div className="flex h-8 items-start justify-center pt-px">
-								<HiArrowRightEndOnRectangle className="size-4 shrink-0 text-danger" />
-							</div>
+							<HiArrowRightStartOnRectangle />
 							<div className="flex flex-col">
 								<Label>Signout</Label>
 							</div>
