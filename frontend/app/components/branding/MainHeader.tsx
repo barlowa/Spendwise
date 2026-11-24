@@ -4,36 +4,35 @@ import { AuthenticatedBurgerMenu } from "~/components/branding/AuthenticatedBurg
 import Logo from "~/components/branding/Logo";
 import { UnauthenticatedBurgerMenu } from "~/components/branding/UnauthenticatedBurgerMenu";
 
-export default function AuthStatusBanner() {
-	const { isAuthenticated, isLoading } = useAuth0();
-	// const accountName = user?.name ?? user?.email;
+export default function MainHeader() {
+	const { isAuthenticated, isLoading, user } = useAuth0();
+	const accountName = user?.name ?? user?.email;
 
 	return (
-		<header className="bg-background/90 backdrop-blur-sm border-b">
+		<header className="sticky top-0 z-50 border-b bg-background/70 backdrop-blur-sm">
 			<div className="mx-auto flex min-h-12 max-w-7xl items-center justify-between gap-4 px-4 py-2 sm:px-6 lg:px-8">
 				<div className="flex items-center gap-3">
-					<Logo /> <Chip>Spendwise</Chip>
+					<Logo />
+					<Chip color="accent" variant="tertiary" size="lg">
+						<Chip.Label>Spendwise</Chip.Label>
+					</Chip>
 				</div>
 
 				<div className="flex items-center gap-3">
 					{isLoading ? (
-						<>
-							<Spinner size="sm" />
-							<span className="text-sm text-muted">Checking sign-in...</span>
-						</>
+						<Spinner size="sm" />
 					) : (
 						<>
+							{isAuthenticated && accountName && (
+								<span className="max-w-48 truncate text-sm text-muted">
+									{accountName}
+								</span>
+							)}
 							{isAuthenticated ? (
 								<AuthenticatedBurgerMenu />
 							) : (
 								<UnauthenticatedBurgerMenu />
 							)}
-
-							{/* {isAuthenticated && accountName && (
-								<span className="max-w-48 truncate text-sm text-muted">
-									{accountName}
-								</span>
-							)} */}
 						</>
 					)}
 				</div>

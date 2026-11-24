@@ -11,7 +11,7 @@ import type { Route } from "./+types/root";
 import "~/app.css";
 import { Auth0Provider } from "@auth0/auth0-react-router";
 import { rootAuthLoader } from "@auth0/auth0-react-router/server";
-import AuthStatusBanner from "~/components/branding/AuthStatusBanner";
+import MainHeader from "~/components/branding/MainHeader";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -49,7 +49,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
 	return (
 		<Auth0Provider>
-			<AuthStatusBanner />
+			<MainHeader />
 			<Outlet />
 		</Auth0Provider>
 	);
