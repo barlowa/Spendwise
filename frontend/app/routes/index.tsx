@@ -14,7 +14,7 @@ export default function Home() {
 				<p>Loading…</p>
 			</AuthLoading>
 			<SignedOut>
-				<LoginButton>Log in</LoginButton>
+				<LoginButton returnTo="/home">Log in</LoginButton>
 			</SignedOut>
 			<SignedIn>
 				<LogoutButton>Log out</LogoutButton>

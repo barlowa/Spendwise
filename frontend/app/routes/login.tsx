@@ -87,7 +87,7 @@ export default function Login() {
 								className="w-full"
 								onPress={() =>
 									loginWithRedirect({
-										returnTo: `${window.location.origin}/home`,
+										returnTo: "/home",
 									})
 								}
 							>
