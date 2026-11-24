@@ -15,10 +15,6 @@ import type {
 } from "~/routes/transactions/types";
 import type { Route } from "./+types";
 
-type ActionData = {
-	error?: string;
-};
-
 const getFormText = (formData: FormData, key: string) => {
 	const value = formData.get(key);
 	return typeof value === "string" ? value.trim() : "";
@@ -53,11 +49,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
 			const amount = Number(getFormText(formData, "amount"));
 
 			if (!description || description.length > 255) {
-				return { error: "Enter a description between 1 and 255 characters." };
+				return {
+					success: false,
+					error: "Enter a description between 1 and 255 characters.",
+				};
 			}
 
 			if (!Number.isFinite(amount) || amount <= 0) {
-				return { error: "Enter an amount greater than zero." };
+				return { success: false, error: "Enter an amount greater than zero." };
 			}
 
 			const body = { description, amount };
@@ -71,7 +70,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 				const transactionId = Number(getFormText(formData, "transaction_id"));
 
 				if (!Number.isInteger(transactionId) || transactionId < 0) {
-					return { error: "Invalid transaction ID." };
+					return { success: false, error: "Invalid transaction ID." };
 				}
 
 				await axios.patch<UpdateTransactionResponse, UpdateTransactionRequest>(
@@ -83,14 +82,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
 				);
 			}
 
-			return { success: true };
+			return { success: true, error: "" };
 		}
 
 		if (intent === "delete") {
 			const transactionId = Number(getFormText(formData, "transaction_id"));
 
 			if (!Number.isInteger(transactionId) || transactionId < 0) {
-				return { error: "Invalid transaction ID." };
+				return { success: false, error: "Invalid transaction ID." };
 			}
 
 			await axios.delete<DeleteTransactionResponse, DeleteTransactionRequest>(
@@ -100,19 +99,19 @@ export const action = async ({ request }: Route.ActionArgs) => {
 				},
 			);
 
-			return { success: true };
+			return { success: true, error: "" };
 		}
 
-		return { error: "Unsupported transaction action." };
+		return { success: false, error: "Unsupported transaction action." };
 	} catch (error) {
-		return { error: getApiError(error) };
+		return { success: false, error: getApiError(error) };
 	}
 };
 
 export default function Transactions({
 	loaderData,
 	actionData,
-}: Route.ComponentProps & { actionData?: ActionData }) {
+}: Route.ComponentProps) {
 	const navigation = useNavigation();
 	const isSubmitting = navigation.state === "submitting";
 	const transactions = loaderData.transactions ?? [];
