@@ -7,7 +7,8 @@
 		"dev": "react-router dev",
 		"start": "react-router-serve ./build/server/index.js",
 		"typecheck": "react-router typegen && tsc",
-		"test": "vitest"
+		"test": "vitest",
+		"generate-api-types": "dotenv -e ../.env -- sh -c 'openapi-typescript \"$VITE_API_URL/openapi.json\" -o app/types/api.d.ts'"
 	},
 	"dependencies": {
 		"@auth0/auth0-react-router": "^1.0.0-beta.2",
@@ -29,6 +30,8 @@
 		"@types/node": "^22",
 		"@types/react": "^19.2.18",
 		"@types/react-dom": "^19.2.7",
+		"dotenv-cli": "^11.1.0",
+		"openapi-typescript": "^7.13.0",
 		"tailwindcss": "^4.2.2",
 		"typescript": "^5.9.3",
 		"vite": "^8.0.3",
