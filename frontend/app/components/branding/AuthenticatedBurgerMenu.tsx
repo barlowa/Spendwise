@@ -1,12 +1,10 @@
 import { useAuth0 } from "@auth0/auth0-react-router";
 import { Button, Description, Dropdown, Label, Separator } from "@heroui/react";
 import {
-	HiArrowRightEndOnRectangle,
 	HiArrowRightStartOnRectangle,
 	HiBanknotes,
 	HiBars2,
 	HiHome,
-	HiMiniChartBar,
 	HiMiniUserCircle,
 } from "react-icons/hi2";
 
@@ -49,13 +47,13 @@ export function AuthenticatedBurgerMenu() {
 								<Description>Add and remove transactions</Description>
 							</div>
 						</Dropdown.Item>
-						<Dropdown.Item id="reports" textValue="Reports" href="/reports">
+						{/* <Dropdown.Item id="reports" textValue="Reports" href="/reports">
 							<HiMiniChartBar />
 							<div className="flex flex-col">
 								<Label>Reports</Label>
 								<Description>View your spending report</Description>
 							</div>
-						</Dropdown.Item>
+						</Dropdown.Item> */}
 					</Dropdown.Section>
 					<Separator />
 					<Dropdown.Section>
