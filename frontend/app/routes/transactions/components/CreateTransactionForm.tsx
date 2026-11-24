@@ -1,6 +1,5 @@
-import { Button, Card, Input } from "@heroui/react";
+import { Button, Card, Form, Input } from "@heroui/react";
 import { HiOutlineBanknotes } from "react-icons/hi2";
-import { Form } from "react-router";
 
 interface Props {
 	isSubmitting: boolean;
