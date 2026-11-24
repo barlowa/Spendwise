@@ -2,7 +2,6 @@ import { Button, Description, Dropdown, Label, Separator } from "@heroui/react";
 import {
 	HiArrowRightEndOnRectangle,
 	HiBars2,
-	HiMiniUserCircle,
 	HiMiniUserPlus,
 } from "react-icons/hi2";
 
@@ -15,17 +14,6 @@ export function UnauthenticatedBurgerMenu() {
 			<Dropdown.Popover>
 				<Dropdown.Menu>
 					<Dropdown.Section>
-						<Dropdown.Item
-							id="update-profile"
-							textValue="Update Profile"
-							href="/profile"
-						>
-							<HiMiniUserCircle />
-							<div className="flex flex-col">
-								<Label>User Profile</Label>
-								<Description>View and edit your profile</Description>
-							</div>
-						</Dropdown.Item>
 						<Dropdown.Item id="reports" textValue="Reports" href="/login">
 							<HiMiniUserPlus />
 							<div className="flex flex-col">
