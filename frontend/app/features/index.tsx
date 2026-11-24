@@ -1,10 +1,11 @@
-import { Card, Chip, Link } from "@heroui/react";
+import { Button, Card, Chip, Link } from "@heroui/react";
 import {
 	HiArrowRight,
 	HiOutlineBanknotes,
 	HiOutlineCalendarDays,
 	HiOutlinePencilSquare,
 } from "react-icons/hi2";
+import { useNavigate } from "react-router";
 
 export function meta() {
 	return [
@@ -39,6 +40,7 @@ const features = [
 ];
 
 export default function LandingPage() {
+	const navigate = useNavigate();
 	return (
 		<div className="pb-20 pt-10 sm:px-6 sm:pt-16 lg:px-8">
 			<section className="grid items-center gap-12 py-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-16">
@@ -52,13 +54,10 @@ export default function LandingPage() {
 						reviewing transactions in one clear place.
 					</p>
 					<div className="mt-8 flex flex-wrap items-center gap-5">
-						<Link
-							href="/login"
-							className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-accent px-5 py-3 font-semibold text-accent-foreground shadow-lg shadow-accent/20 transition hover:opacity-90"
-						>
+						<Button onPress={() => navigate("/login")} size="lg">
 							Sign up to get started
 							<HiArrowRight aria-hidden="true" className="size-4" />
-						</Link>
+						</Button>
 						<Link
 							href="#features"
 							className="inline-flex items-center gap-2 font-medium text-foreground hover:text-accent"
@@ -136,22 +135,25 @@ export default function LandingPage() {
 			</section>
 
 			<section id="features" className="scroll-mt-24 py-12 sm:py-16">
-				<div className="mx-auto max-w-2xl text-center">
-					<p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-						Getting started
-					</p>
-					<h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-						The essentials, made simple.
-					</h2>
-					<p className="mt-4 text-muted">
+				<Card className="p-12" title="Getting started" variant="transparent">
+					<Card.Header className="flex flex-col gap-3 text-center pb-6">
+						<p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
+							Getting started
+						</p>
+						<Card.Title className="text-3xl font-semibold tracking-tight">
+							The essentials, made simple.
+						</Card.Title>
+					</Card.Header>
+					<Card.Content className="text-center text-muted">
 						Spendwise is in its first phase. For now, focus on keeping your
 						transactions organized and up to date.
-					</p>
-				</div>
+					</Card.Content>
+				</Card>
+
 				<div className="mt-10 grid gap-4 md:grid-cols-3">
 					{features.map(({ icon: Icon, title, description }) => (
 						<Card
-							className="border border-border bg-surface transition hover:-translate-y-1 hover:shadow-lg"
+							className="border border-border transition hover:-translate-y-1 hover:shadow-lg"
 							key={title}
 						>
 							<Card.Content className="p-6">
@@ -168,22 +170,23 @@ export default function LandingPage() {
 				</div>
 			</section>
 
-			<section className="mt-8 rounded-3xl border border-border bg-surface-secondary px-6 py-10 text-center sm:px-10 sm:py-14">
-				<h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-					Ready to keep your spending in view?
-				</h2>
-				<p className="mx-auto mt-3 max-w-xl text-muted">
-					Create an account and start building a clear record of your
-					transactions.
-				</p>
-				<Link
-					href="/login"
-					className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-xl bg-accent px-5 py-3 font-semibold text-accent-foreground shadow-lg shadow-accent/20 transition hover:opacity-90"
-				>
-					Create your account
-					<HiArrowRight aria-hidden="true" className="size-4" />
-				</Link>
-			</section>
+			<Card className="p-12" title="Create your account" variant="default">
+				<Card.Header className="flex flex-col gap-3 text-center pb-6">
+					<Card.Title className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+						Ready to keep your spending in view?
+					</Card.Title>
+					<Card.Description>
+						Create an account and start building a clear record of your
+						transactions.
+					</Card.Description>
+				</Card.Header>
+				<Card.Content className="flex items-center">
+					<Button onPress={() => navigate("/login")} size="lg">
+						Create your account
+						<HiArrowRight aria-hidden="true" className="size-4" />
+					</Button>
+				</Card.Content>
+			</Card>
 		</div>
 	);
 }
