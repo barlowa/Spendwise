@@ -3,10 +3,13 @@
 
 body {
 	min-height: 100vh;
-	background-color: #f8fafc;
-	background-image:
-		radial-gradient(circle at top, rgba(16, 185, 129, 0.18), transparent 38%),
-		linear-gradient(135deg, #f8fafc 0%, #edfdf6 100%);
+	color: var(--foreground);
+	background-color: var(--background);
+	background-image: radial-gradient(
+		circle at top left,
+		color-mix(in oklch, var(--accent) 20%, transparent),
+		transparent 80%
+	);
 	background-attachment: fixed;
 }
 
