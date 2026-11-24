@@ -1,11 +1,5 @@
-import {
-	Button,
-	Description,
-	Dropdown,
-	Kbd,
-	Label,
-	Separator,
-} from "@heroui/react";
+import { useAuth0 } from "@auth0/auth0-react-router";
+import { Button, Description, Dropdown, Label, Separator } from "@heroui/react";
 import {
 	HiArrowRightEndOnRectangle,
 	HiBanknotes,
@@ -15,15 +9,20 @@ import {
 } from "react-icons/hi2";
 
 export function AuthenticatedBurgerMenu() {
+	const { logout } = useAuth0();
 	return (
 		<Dropdown>
 			<Button isIconOnly aria-label="Menu" variant="secondary">
 				<HiBars2 />
 			</Button>
 			<Dropdown.Popover>
-				<Dropdown.Menu onAction={(key) => console.log(`Selected: ${key}`)}>
+				<Dropdown.Menu>
 					<Dropdown.Section>
-						<Dropdown.Item id="new-file" textValue="New file">
+						<Dropdown.Item
+							id="update-profile"
+							textValue="Update Profile"
+							href="/profile"
+						>
 							<div className="flex h-8 items-start justify-center pt-px">
 								<HiMiniUserCircle className="size-4 shrink-0 text-muted" />
 							</div>
@@ -31,12 +30,12 @@ export function AuthenticatedBurgerMenu() {
 								<Label>User Profile</Label>
 								<Description>View and edit your profile</Description>
 							</div>
-							<Kbd className="ms-auto" slot="keyboard" variant="light">
-								<Kbd.Abbr keyValue="command" />
-								<Kbd.Content>N</Kbd.Content>
-							</Kbd>
 						</Dropdown.Item>
-						<Dropdown.Item id="transactions" textValue="Edit file">
+						<Dropdown.Item
+							id="transactions"
+							textValue="Transactions"
+							href="/transactions"
+						>
 							<div className="flex h-8 items-start justify-center pt-px">
 								<HiBanknotes className="size-4 shrink-0 text-muted" />
 							</div>
@@ -44,12 +43,8 @@ export function AuthenticatedBurgerMenu() {
 								<Label>Transactions</Label>
 								<Description>Add and remove transactions</Description>
 							</div>
-							<Kbd className="ms-auto" slot="keyboard" variant="light">
-								<Kbd.Abbr keyValue="command" />
-								<Kbd.Content>E</Kbd.Content>
-							</Kbd>
 						</Dropdown.Item>
-						<Dropdown.Item id="edit-file" textValue="Edit file">
+						<Dropdown.Item id="reports" textValue="Reports" href="/reports">
 							<div className="flex h-8 items-start justify-center pt-px">
 								<HiMiniChartBar className="size-4 shrink-0 text-muted" />
 							</div>
@@ -57,18 +52,19 @@ export function AuthenticatedBurgerMenu() {
 								<Label>Reports</Label>
 								<Description>View your spending report</Description>
 							</div>
-							<Kbd className="ms-auto" slot="keyboard" variant="light">
-								<Kbd.Abbr keyValue="command" />
-								<Kbd.Content>E</Kbd.Content>
-							</Kbd>
 						</Dropdown.Item>
 					</Dropdown.Section>
 					<Separator />
 					<Dropdown.Section>
 						<Dropdown.Item
-							id="delete-file"
-							textValue="Delete file"
+							id="signout"
+							textValue="Sign Out"
 							variant="danger"
+							onPress={() =>
+								logout({
+									returnTo: "/",
+								})
+							}
 						>
 							<div className="flex h-8 items-start justify-center pt-px">
 								<HiArrowRightEndOnRectangle className="size-4 shrink-0 text-danger" />
@@ -76,11 +72,6 @@ export function AuthenticatedBurgerMenu() {
 							<div className="flex flex-col">
 								<Label>Signout</Label>
 							</div>
-							<Kbd className="ms-auto" slot="keyboard" variant="light">
-								<Kbd.Abbr keyValue="command" />
-								<Kbd.Abbr keyValue="shift" />
-								<Kbd.Content>D</Kbd.Content>
-							</Kbd>
 						</Dropdown.Item>
 					</Dropdown.Section>
 				</Dropdown.Menu>
