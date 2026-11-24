@@ -22,13 +22,13 @@ export default function Login() {
 		useAuth0();
 
 	return (
-		<main className="flex min-h-screen items-center justify-center px-4 py-12">
+		<div className="flex min-h-screen items-center justify-center">
 			<Card className="w-full max-w-md border border-default-200/60 bg-background/90 shadow-[0_24px_60px_-24px_rgba(16,185,129,0.38)] backdrop-blur-sm">
 				<CardHeader className="flex flex-col items-center gap-4 pb-4 pt-8 text-center">
 					<Logo />
 					<div className="space-y-2">
-						<Chip variant="soft" size="sm">
-							SPENDWISE
+						<Chip variant="tertiary" color="accent" size="lg">
+							Spendwise
 						</Chip>
 						<h1 className="text-3xl font-bold tracking-tight text-foreground">
 							Welcome back
@@ -59,9 +59,7 @@ export default function Login() {
 									</Avatar.Fallback>
 								</Avatar>
 								<div className="min-w-0 text-left">
-									<p className="text-xs uppercase tracking-[0.2em] text-default-500">
-										Signed in as
-									</p>
+									<p className="text-xs text-default-500">Signed in as</p>
 									<p className="truncate font-semibold text-foreground">
 										{user?.name ?? user?.email ?? "Your account"}
 									</p>
@@ -97,7 +95,11 @@ export default function Login() {
 								variant="secondary"
 								size="lg"
 								className="w-full"
-								onPress={() => loginWithRedirect()}
+								onPress={() =>
+									loginWithRedirect({
+										returnTo: "/home",
+									})
+								}
 							>
 								Create an account
 							</Button>
@@ -105,6 +107,6 @@ export default function Login() {
 					)}
 				</CardContent>
 			</Card>
-		</main>
+		</div>
 	);
 }

@@ -117,7 +117,7 @@ export default function Transactions({
 	const transactions = loaderData.transactions ?? [];
 
 	return (
-		<main className="mx-auto min-h-[calc(100vh-65px)] max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+		<div>
 			<OverviewHeader transactions={transactions} />
 
 			<CreateTransactionForm isSubmitting={isSubmitting} />
@@ -135,6 +135,6 @@ export default function Transactions({
 				transactions={transactions}
 				isSubmitting={isSubmitting}
 			/>
-		</main>
+		</div>
 	);
 }
