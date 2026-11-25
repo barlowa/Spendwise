@@ -22,7 +22,7 @@ export function meta() {
 	];
 }
 
-export default function Profile() {
+export function ProfilePage() {
 	const user = useUser();
 	const name = user?.name?.trim() || "Spendwise user";
 	const email = user?.email?.trim() || "";
@@ -62,3 +62,5 @@ export default function Profile() {
 		</div>
 	);
 }
+
+export default ProfilePage;
