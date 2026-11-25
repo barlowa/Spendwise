@@ -40,7 +40,7 @@ const features = [
 	},
 ];
 
-export default function LandingPage() {
+export function LandingPageContent() {
 	const navigate = useNavigate();
 	return (
 		<div className="pb-20 pt-10 sm:px-6 sm:pt-16 lg:px-8">
@@ -191,3 +191,5 @@ export default function LandingPage() {
 		</div>
 	);
 }
+
+export default LandingPageContent;
