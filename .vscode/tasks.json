@@ -13,7 +13,8 @@
 		{
 			"label": "Start API",
 			"type": "shell",
-			"command": "uv run fastapi dev main.py",
+			// "command": "uv run fastapi dev main.py",
+			"command": "uv run python -m debugpy --listen 5678 -m uvicorn main:app --reload",
 			"options": {
 				"cwd": "${workspaceFolder}/api"
 			},

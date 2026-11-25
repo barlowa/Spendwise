@@ -15,8 +15,6 @@ router = APIRouter(
     tags=["Transactions"],
 )
 
-# TODO: Add authentication to the transactions endpoints so that only authenticated users can access their own transactions.
-
 
 @router.get(
     "", response_model=list[TransactionResponse], status_code=status.HTTP_200_OK
