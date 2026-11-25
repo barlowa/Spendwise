@@ -69,7 +69,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 			} else {
 				const transactionId = Number(getFormText(formData, "transaction_id"));
 
-				if (!Number.isInteger(transactionId) || transactionId < 0) {
+				if (!Number.isInteger(transactionId) || transactionId <= 0) {
 					return { success: false, error: "Invalid transaction ID." };
 				}
 
@@ -88,7 +88,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 		if (intent === "delete") {
 			const transactionId = Number(getFormText(formData, "transaction_id"));
 
-			if (!Number.isInteger(transactionId) || transactionId < 0) {
+			if (!Number.isInteger(transactionId) || transactionId <= 0) {
 				return { success: false, error: "Invalid transaction ID." };
 			}
 
@@ -108,10 +108,15 @@ export const action = async ({ request }: Route.ActionArgs) => {
 	}
 };
 
-export default function Transactions({
+type TransactionsProps = Pick<
+	Route.ComponentProps,
+	"loaderData" | "actionData"
+>;
+
+export function TransactionsPage({
 	loaderData,
 	actionData,
-}: Route.ComponentProps) {
+}: TransactionsProps) {
 	const navigation = useNavigation();
 	const isSubmitting = navigation.state === "submitting";
 	const transactions = loaderData.transactions ?? [];
@@ -138,3 +143,5 @@ export default function Transactions({
 		</div>
 	);
 }
+
+export default TransactionsPage;
