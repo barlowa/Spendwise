@@ -9,18 +9,8 @@ import TransactionCountCard from "~/features/home/components/TransactionCountCar
 import WelcomePanel from "~/features/home/components/WelcomePanel";
 import type { HomeActivityItem } from "~/features/home/types";
 import type { GetTransactionsResponse } from "~/features/transactions/types";
+import { currencyFormatter, dateFormatter } from "~/utils/convert";
 import type { Route } from "./+types";
-
-const currencyFormatter = new Intl.NumberFormat(undefined, {
-	style: "currency",
-	currency: "USD",
-});
-
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-	month: "short",
-	day: "numeric",
-	year: "numeric",
-});
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
 	await requireSession(request);
@@ -61,7 +51,9 @@ function getRecentActivity(
 		}));
 }
 
-export default function Home({ loaderData }: Route.ComponentProps) {
+type HomeProps = Pick<Route.ComponentProps, "loaderData">;
+
+export function HomePage({ loaderData }: HomeProps) {
 	const user = useUser();
 	const navigate = useNavigate();
 	const transactions = loaderData?.transactions ?? [];
@@ -99,3 +91,5 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 		</div>
 	);
 }
+
+export default HomePage;
