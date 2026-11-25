@@ -27,13 +27,13 @@ export function AuthenticatedBurgerMenu() {
 						</Dropdown.Item>
 						<Dropdown.Item
 							id="update-profile"
-							textValue="Update Profile"
+							textValue="Profile"
 							href="/profile"
 						>
 							<HiMiniUserCircle />
 							<div className="flex flex-col">
 								<Label>User Profile</Label>
-								<Description>View and edit your profile</Description>
+								<Description>View your account details</Description>
 							</div>
 						</Dropdown.Item>
 						<Dropdown.Item
