@@ -7,6 +7,7 @@ import {
 } from "react-icons/hi2";
 import { Form } from "react-router";
 import type { Transaction } from "~/features/transactions/types";
+import { dateFormatter } from "~/utils/convert";
 
 interface Props {
 	transactions: Transaction[];
@@ -74,14 +75,7 @@ export default function TransactionsTable({
 										<Table.Cell>
 											<div className="flex items-center gap-2 whitespace-nowrap text-sm text-muted">
 												<HiOutlineCalendarDays className="size-4" />
-												{new Date(transaction.created_at).toLocaleDateString(
-													undefined,
-													{
-														month: "short",
-														day: "numeric",
-														year: "numeric",
-													},
-												)}
+												{dateFormatter.format(new Date(transaction.created_at))}
 											</div>
 										</Table.Cell>
 										<Table.Cell>

@@ -1,6 +1,7 @@
 import { Chip } from "@heroui/react";
 import { HiOutlineBanknotes } from "react-icons/hi2";
 import type { Transaction } from "~/features/transactions/types";
+import { currencyFormatter } from "~/utils/convert";
 
 interface Props {
 	transactions?: Transaction[];
@@ -32,11 +33,7 @@ export default function OverviewHeader({ transactions }: Props) {
 				<div>
 					<p className="text-xs text-muted">Total transactions</p>
 					<p className="text-lg font-semibold tabular-nums">
-						$
-						{total?.toLocaleString(undefined, {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2,
-						})}
+						{currencyFormatter.format(Number(total))}
 					</p>
 				</div>
 			</div>
