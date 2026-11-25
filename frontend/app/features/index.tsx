@@ -1,4 +1,4 @@
-import { Button, Card, Chip, Link } from "@heroui/react";
+import { Button, Card, Chip } from "@heroui/react";
 import {
 	HiArrowRight,
 	HiOutlineBanknotes,
@@ -6,6 +6,7 @@ import {
 	HiOutlinePencilSquare,
 } from "react-icons/hi2";
 import { useNavigate } from "react-router";
+import Link from "~/components/Link";
 
 export function meta() {
 	return [
@@ -59,7 +60,7 @@ export default function LandingPage() {
 							<HiArrowRight aria-hidden="true" className="size-4" />
 						</Button>
 						<Link
-							href="#features"
+							to="#features"
 							className="inline-flex items-center gap-2 font-medium text-foreground hover:text-accent"
 						>
 							Explore the basics

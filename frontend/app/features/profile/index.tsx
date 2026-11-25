@@ -1,7 +1,7 @@
 import { useUser } from "@auth0/auth0-react-router";
 import { requireSession } from "@auth0/auth0-react-router/server";
-import { Link } from "@heroui/react";
 import { HiBanknotes } from "react-icons/hi2";
+import Link from "~/components/Link";
 import type { Route } from "./+types";
 import { DetailsCard } from "./components/DetailsCard";
 import { SecurityCard } from "./components/SecurityCard";
@@ -38,11 +38,12 @@ export default function Profile() {
 						Your profile
 					</h1>
 				</div>
-				<Link href="/transactions" className="flex gap-3 text-accent">
+				<Link
+					to="/transactions"
+					className="flex gap-3 text-accent"
+					icon={<HiBanknotes />}
+				>
 					Go to transactions
-					<Link.Icon>
-						<HiBanknotes />
-					</Link.Icon>
 				</Link>
 			</header>
 

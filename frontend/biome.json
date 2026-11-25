@@ -15,7 +15,24 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"preset": "recommended"
+			"preset": "recommended",
+			"style": {
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"paths": {
+							"@heroui/react": {
+								"importNames": ["Link"],
+								"message": "Use ~/components/Link instead."
+							},
+							"react-router": {
+								"importNames": ["Link"],
+								"message": "Use ~/components/Link instead."
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"javascript": {
