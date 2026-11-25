@@ -17,7 +17,7 @@ export function meta() {
 	];
 }
 
-export default function Login() {
+export function LoginPage() {
 	const { loginWithRedirect, logout, isAuthenticated, user, isLoading } =
 		useAuth0();
 
@@ -110,3 +110,5 @@ export default function Login() {
 		</div>
 	);
 }
+
+export default LoginPage;
