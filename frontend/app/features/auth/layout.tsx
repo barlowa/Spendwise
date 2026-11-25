@@ -28,10 +28,12 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 	return rootAuthLoader(request);
 };
 
-export default function AuthLayout() {
+export function AuthLayoutContent() {
 	return (
 		<Auth0Provider>
 			<Outlet />
 		</Auth0Provider>
 	);
 }
+
+export default AuthLayoutContent;
