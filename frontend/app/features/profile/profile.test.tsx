@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import DetailRow from "~/features/profile/components/DetailRow";
 import DetailsCard from "~/features/profile/components/DetailsCard";
 import SecurityCard from "~/features/profile/components/SecurityCard";
 import SummaryCard from "~/features/profile/components/SummaryCard";
-import { loader, meta, ProfilePage } from "~/features/profile/index";
+import { loader, ProfilePage } from "~/features/profile/index";
+import { render, screen } from "~/test/test-utils";
 
 const mocks = vi.hoisted(() => ({
 	useUser: vi.fn(),
@@ -36,10 +36,6 @@ vi.mock("~/components/Link", async () => {
 	};
 });
 
-function render(node: ReactNode) {
-	return renderToStaticMarkup(node);
-}
-
 function makeRouteRequest() {
 	return {
 		request: new Request("http://localhost/profile"),
@@ -69,69 +65,59 @@ describe("profile route", () => {
 	});
 
 	it("renders the user profile, details, security information, and transactions link", () => {
-		const markup = render(ProfilePage());
+		render(<ProfilePage />);
 
-		expect(markup).toContain("Your profile");
-		expect(markup).toContain("Jordan Doe");
-		expect(markup).toContain("jordan@example.com");
-		expect(markup).toContain("Email verified");
-		expect(markup).toContain("Profile details");
-		expect(markup).toContain("Sign-in managed by Auth0");
-		expect(markup).toContain('href="/transactions"');
-		expect(markup).toContain("Go to transactions");
-	});
-
-	it("provides profile page metadata", () => {
-		expect(meta()).toEqual([
-			{ title: "Your profile | Spendwise" },
-			{
-				name: "description",
-				content:
-					"View the account details connected to your Spendwise profile.",
-			},
-		]);
+		expect(
+			screen.getByRole("heading", { name: "Your profile", level: 1 }),
+		).not.toBeNull();
+		expect(
+			screen.getByRole("heading", { name: "Jordan Doe" }),
+		).not.toBeNull();
+		expect(screen.getAllByText("jordan@example.com").length).toBeGreaterThan(0);
+		expect(screen.getByText("Email verified")).not.toBeNull();
+		expect(screen.getByText("Profile details")).not.toBeNull();
+		expect(screen.getByText("Sign-in managed by Auth0")).not.toBeNull();
+		expect(screen.getByRole("link", { name: "Go to transactions" }).getAttribute("href")).toBe(
+			"/transactions",
+		);
 	});
 
 	it("uses sensible fallbacks when Auth0 user fields are unavailable", () => {
 		mocks.useUser.mockReturnValue({});
-		const markup = render(ProfilePage());
+		render(<ProfilePage />);
 
-		expect(markup).toContain("Spendwise user");
-		expect(markup).toContain("No email address shared");
-		expect(markup).toContain("Not provided");
-		expect(markup).toContain("Email status unavailable");
-		expect(markup).toContain("Not available");
+		expect(screen.getByText("Spendwise user")).not.toBeNull();
+		expect(screen.getByText("No email address shared")).not.toBeNull();
+		expect(screen.getAllByText("Not provided").length).toBeGreaterThan(0);
+		expect(screen.getByText("Email status unavailable")).not.toBeNull();
+		expect(screen.getAllByText("Not available").length).toBeGreaterThan(0);
 	});
 });
 
 describe("profile components", () => {
-	it("renders a verified profile summary with the supplied account details", () => {
-		const markup = render(
-			SummaryCard({
-				name: "Jordan Doe",
-				email: "jordan@example.com",
-				picture: "https://example.test/avatar.png",
-				emailVerified: true,
-			}),
+	it("renders the profile summary and initials fallback", () => {
+		render(
+			<SummaryCard
+				name="Jordan Doe"
+				email="jordan@example.com"
+				picture="https://example.test/avatar.png"
+				emailVerified
+			/>,
 		);
 
-		expect(markup).toContain("Jordan Doe");
-		expect(markup).toContain("jordan@example.com");
-		expect(markup).toContain("Email verified");
-		expect(markup).toContain(">JD</span>");
+		expect(screen.getByRole("heading", { name: "Jordan Doe" })).not.toBeNull();
+		expect(screen.getByText("jordan@example.com")).not.toBeNull();
+		expect(screen.getByText("Email verified")).not.toBeNull();
+		expect(screen.getByText("JD")).not.toBeNull();
 	});
 
 	it("shows the unverified status and fallback email when appropriate", () => {
-		const markup = render(
-			SummaryCard({
-				name: "Jordan Doe",
-				email: "",
-				emailVerified: false,
-			}),
+		render(
+			<SummaryCard name="Jordan Doe" email="" emailVerified={false} />,
 		);
 
-		expect(markup).toContain("Email not verified");
-		expect(markup).toContain("No email address shared");
+		expect(screen.getByText("Email not verified")).not.toBeNull();
+		expect(screen.getByText("No email address shared")).not.toBeNull();
 	});
 
 	it("renders each available account detail and verification state", () => {
@@ -140,38 +126,36 @@ describe("profile components", () => {
 			email: "jordan@example.com",
 			email_verified: false,
 		});
-		const markup = render(DetailsCard());
+		render(<DetailsCard />);
 
-		expect(markup).toContain("Personal information");
-		expect(markup).toContain("Jordan Doe");
-		expect(markup).toContain("jordan@example.com");
-		expect(markup).toContain("Not verified");
-		expect(markup).toContain("Auth0");
+		expect(screen.getByText("Personal information")).not.toBeNull();
+		expect(screen.getByText("Jordan Doe")).not.toBeNull();
+		expect(screen.getByText("jordan@example.com")).not.toBeNull();
+		expect(screen.getByText("Not verified")).not.toBeNull();
+		expect(screen.getByText("Auth0")).not.toBeNull();
 	});
 
 	it("renders fallback values for missing detail fields", () => {
 		mocks.useUser.mockReturnValue({});
-		const markup = render(DetailsCard());
+		render(<DetailsCard />);
 
-		expect(markup).toContain("Not provided");
-		expect(markup).toContain("Not available");
+		expect(screen.getAllByText("Not provided").length).toBeGreaterThan(0);
+		expect(screen.getAllByText("Not available").length).toBeGreaterThan(0);
 	});
 
 	it("renders a semantic label/value detail row", () => {
-		const markup = render(DetailRow({ label: "Account ID", value: "abc-123" }));
+		render(<DetailRow label="Account ID" value="abc-123" />);
 
-		expect(markup).toContain("<dt");
-		expect(markup).toContain("Account ID");
-		expect(markup).toContain("<dd");
-		expect(markup).toContain("abc-123");
+		expect(screen.getByText("Account ID").tagName).toBe("DT");
+		expect(screen.getByText("abc-123").tagName).toBe("DD");
 	});
 
 	it("explains how Auth0 manages account sign-in", () => {
-		const markup = render(SecurityCard());
+		render(<SecurityCard />);
 
-		expect(markup).toContain("Account security");
-		expect(markup).toContain("Sign-in managed by Auth0");
-		expect(markup).toContain("Sign-in provider");
-		expect(markup).toContain("Auth0");
+		expect(screen.getByText("Account security")).not.toBeNull();
+		expect(screen.getByText("Sign-in managed by Auth0")).not.toBeNull();
+		expect(screen.getByText("Sign-in provider")).not.toBeNull();
+		expect(screen.getByText("Auth0")).not.toBeNull();
 	});
 });

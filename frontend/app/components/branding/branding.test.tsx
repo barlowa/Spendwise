@@ -1,10 +1,9 @@
-import { Dropdown } from "@heroui/react";
-import { isValidElement, type ReactElement, type ReactNode } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthenticatedBurgerMenu } from "~/components/branding/AuthenticatedBurgerMenu";
 import MainHeader from "~/components/branding/MainHeader";
 import { UnauthenticatedBurgerMenu } from "~/components/branding/UnauthenticatedBurgerMenu";
+import { render, screen } from "~/test/test-utils";
 
 const mocks = vi.hoisted(() => ({
 	useAuth0: vi.fn(),
@@ -15,40 +14,12 @@ vi.mock("@auth0/auth0-react-router", () => ({
 	useAuth0: mocks.useAuth0,
 }));
 
-type ElementProps = {
-	children?: ReactNode;
-	id?: string;
-	href?: string;
-	onPress?: () => void;
-};
-
-function findElements(
-	node: ReactNode,
-	predicate: (element: ReactElement<ElementProps>) => boolean,
-): ReactElement<ElementProps>[] {
-	if (Array.isArray(node)) {
-		return node.flatMap((child) => findElements(child, predicate));
-	}
-
-	if (!isValidElement(node)) {
-		return [];
-	}
-
-	const element = node as ReactElement<ElementProps>;
-	const matches = predicate(element) ? [element] : [];
-	return [...matches, ...findElements(element.props.children, predicate)];
-}
-
-function render(node: ReactNode) {
-	return renderToStaticMarkup(node);
-}
-
 beforeEach(() => {
 	mocks.logout.mockReset();
 	mocks.useAuth0.mockReset().mockReturnValue({
 		isAuthenticated: false,
 		isLoading: false,
-		user: undefined,
+		user: { email: "jordan@example.com" },
 		logout: mocks.logout,
 	});
 });
@@ -62,113 +33,91 @@ describe("main header", () => {
 			logout: mocks.logout,
 		});
 
-		const markup = render(MainHeader());
+		render(<MainHeader />);
 
-		expect(markup).toContain("spinner");
-		expect(markup).not.toContain('aria-label="Menu"');
+		expect(screen.getByRole("status")).not.toBeNull();
+		expect(screen.queryByRole("button", { name: "Menu" })).toBeNull();
 	});
 
-	it("shows the account name and authenticated navigation", () => {
-		const header = MainHeaderWithAuth({
+	it("shows the account name and authenticated navigation", async () => {
+		const user = userEvent.setup();
+		mocks.useAuth0.mockReturnValue({
 			isAuthenticated: true,
+			isLoading: false,
 			user: { name: "Jordan Doe" },
+			logout: mocks.logout,
 		});
-		const markup = render(
-			header,
-		);
 
-		expect(markup).toContain("Jordan Doe");
-		expect(markup).toContain('aria-label="Menu"');
+		render(<MainHeader />);
+
+		expect(screen.getByText("Jordan Doe")).not.toBeNull();
+		await user.click(screen.getByRole("button", { name: "Menu" }));
 		expect(
-			findElements(header, (element) => element.type === AuthenticatedBurgerMenu),
-		).toHaveLength(1);
+			await screen.findByRole("menuitem", { name: /Home/ }),
+		).not.toBeNull();
 	});
 
 	it("uses the email when an authenticated user has no name", () => {
-		const markup = render(
-			MainHeaderWithAuth({
-				isAuthenticated: true,
-				user: { email: "jordan@example.com" },
-			}),
-		);
+		mocks.useAuth0.mockReturnValue({
+			isAuthenticated: true,
+			isLoading: false,
+			user: { email: "jordan@example.com" },
+			logout: mocks.logout,
+		});
 
-		expect(markup).toContain("jordan@example.com");
+		render(<MainHeader />);
+
+		expect(screen.getByText("jordan@example.com")).not.toBeNull();
 	});
 
-	it("shows unauthenticated navigation without exposing account details", () => {
-		const header = MainHeader();
-		const markup = render(header);
+	it("shows unauthenticated navigation without exposing account details", async () => {
+		const user = userEvent.setup();
+		render(<MainHeader />);
 
-		expect(markup).toContain('aria-label="Menu"');
-		expect(markup).not.toContain("jordan@example.com");
+		expect(screen.queryByText("jordan@example.com")).toBeNull();
+		await user.click(screen.getByRole("button", { name: "Menu" }));
 		expect(
-			findElements(header, (element) => element.type === UnauthenticatedBurgerMenu),
-		).toHaveLength(1);
+			await screen.findByRole("menuitem", { name: /Sign Up/ }),
+		).not.toBeNull();
 	});
 });
 
-function MainHeaderWithAuth({
-	isAuthenticated,
-	user,
-}: {
-	isAuthenticated: boolean;
-	user: { name?: string; email?: string };
-}) {
-	mocks.useAuth0.mockReturnValue({
-		isAuthenticated,
-		isLoading: false,
-		user,
-		logout: mocks.logout,
-	});
-	return MainHeader();
-}
-
 describe("authenticated navigation menu", () => {
-	it("links to home, profile, and transactions", () => {
-		const menu = AuthenticatedBurgerMenu();
-		const items = findElements(
-			menu,
-			(element) => element.type === Dropdown.Item,
-		);
+	it("links to home, profile, and transactions", async () => {
+		const user = userEvent.setup();
+		render(<AuthenticatedBurgerMenu />);
 
-		expect(items.map((item) => item.props.href)).toEqual([
-			"/home",
-			"/profile",
-			"/transactions",
-			undefined,
-		]);
-		expect(items.map((item) => item.props.id)).toEqual([
-			"home",
-			"update-profile",
-			"transactions",
-			"signout",
-		]);
+		await user.click(screen.getByRole("button", { name: "Menu" }));
+		const homeItem = await screen.findByRole("menuitem", { name: /Home/ });
+		const profileItem = screen.getByRole("menuitem", { name: /User Profile/ });
+		const transactionsItem = screen.getByRole("menuitem", {
+			name: /Transactions/,
+		});
+		expect(homeItem.getAttribute("href")).toBe("/home");
+		expect(profileItem.getAttribute("href")).toBe("/profile");
+		expect(transactionsItem.getAttribute("href")).toBe("/transactions");
 	});
 
-	it("logs out and returns the user to the public root page", () => {
-		const menu = AuthenticatedBurgerMenu();
-		const [signOutItem] = findElements(
-			menu,
-			(element) => element.props.id === "signout",
-		);
+	it("logs out and returns the user to the public root page", async () => {
+		const user = userEvent.setup();
+		render(<AuthenticatedBurgerMenu />);
 
-		signOutItem?.props.onPress?.();
+		await user.click(screen.getByRole("button", { name: "Menu" }));
+		await user.click(await screen.findByRole("menuitem", { name: /Signout/ }));
 		expect(mocks.logout).toHaveBeenCalledWith({ returnTo: "/" });
 	});
 });
 
 describe("unauthenticated navigation menu", () => {
-	it("offers sign-up and sign-in links to the login page", () => {
-		const menu = UnauthenticatedBurgerMenu();
-		const items = findElements(
-			menu,
-			(element) => element.type === Dropdown.Item,
-		);
+	it("offers sign-up and sign-in links to the login page", async () => {
+		const user = userEvent.setup();
+		render(<UnauthenticatedBurgerMenu />);
 
-		expect(items.map((item) => item.props.href)).toEqual([
-			"/login",
-			"/login",
-		]);
-		expect(items.map((item) => item.props.id)).toEqual(["reports", "signin"]);
+		await user.click(screen.getByRole("button", { name: "Menu" }));
+		const signup = await screen.findByRole("menuitem", { name: /Sign Up/ });
+		const signin = screen.getByRole("menuitem", { name: /Sign in/ });
+
+		expect(signup.getAttribute("href")).toBe("/login");
+		expect(signin.getAttribute("href")).toBe("/login");
 	});
 });

@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TokenError } from "@auth0/auth0-react-router/errors";
+import type { ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthLayoutContent, loader } from "~/features/auth/layout";
+import { render, screen } from "~/test/test-utils";
 
 const mocks = vi.hoisted(() => {
 	class MockTokenError extends Error {}
@@ -69,9 +69,9 @@ describe("authenticated layout", () => {
 		mocks.getAccessToken.mockResolvedValue("access-token");
 		mocks.rootAuthLoader.mockResolvedValue(authResult);
 
-		await expect(loader({ request } as Parameters<typeof loader>[0])).resolves.toBe(
-			authResult,
-		);
+		await expect(
+			loader({ request } as Parameters<typeof loader>[0]),
+		).resolves.toBe(authResult);
 
 		expect(mocks.axiosDefaults.baseURL).toBe(import.meta.env.VITE_API_URL);
 		expect(mocks.axiosDefaults.headers.common.Authorization).toBe(
@@ -94,7 +94,9 @@ describe("authenticated layout", () => {
 	});
 
 	it("propagates unexpected token errors", async () => {
-		mocks.getAccessToken.mockRejectedValue(new Error("Auth configuration failed"));
+		mocks.getAccessToken.mockRejectedValue(
+			new Error("Auth configuration failed"),
+		);
 
 		await expect(loader(makeRouteArgs())).rejects.toThrow(
 			"Auth configuration failed",
@@ -103,9 +105,17 @@ describe("authenticated layout", () => {
 	});
 
 	it("wraps the nested route in the Auth0 provider", () => {
-		const markup = renderToStaticMarkup(AuthLayoutContent());
+		render(<AuthLayoutContent />);
 
-		expect(markup).toContain("data-auth-provider");
-		expect(markup).toContain("data-auth-outlet");
+		const provider = document.querySelector("[data-auth-provider]");
+		expect(provider).not.toBeNull();
+		expect(
+			provider?.contains(
+				screen.getByText(
+					(_content, element) =>
+						element?.hasAttribute("data-auth-outlet") ?? false,
+				),
+			),
+		).toBe(true);
 	});
 });

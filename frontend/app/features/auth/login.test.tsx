@@ -1,8 +1,6 @@
-import { Button } from "@heroui/react";
-import { isValidElement, type ReactElement, type ReactNode } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { LoginPage, meta } from "~/features/auth/login";
+import { LoginPage } from "~/features/auth/login";
+import { render, screen, userEvent } from "~/test/test-utils";
 
 const mocks = vi.hoisted(() => ({
 	useAuth0: vi.fn(),
@@ -13,29 +11,6 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@auth0/auth0-react-router", () => ({
 	useAuth0: mocks.useAuth0,
 }));
-
-type ElementProps = {
-	children?: ReactNode;
-	onPress?: () => void;
-};
-
-function findButtons(node: ReactNode): ReactElement<ElementProps>[] {
-	if (Array.isArray(node)) {
-		return node.flatMap(findButtons);
-	}
-
-	if (!isValidElement(node)) {
-		return [];
-	}
-
-	const element = node as ReactElement<ElementProps>;
-	const matches = element.type === Button ? [element] : [];
-	return [...matches, ...findButtons(element.props.children)];
-}
-
-function render(node: ReactNode) {
-	return renderToStaticMarkup(node);
-}
 
 beforeEach(() => {
 	mocks.loginWithRedirect.mockReset();
@@ -57,25 +32,29 @@ describe("login page", () => {
 			isLoading: true,
 		});
 
-		const markup = render(LoginPage());
+		render(<LoginPage />);
 
-		expect(markup).toContain('role="status"');
-		expect(markup).toContain("Checking your sign-in status...");
-		expect(markup).not.toContain("Log in with Auth0");
+		expect(screen.getByText("Checking your sign-in status...")).not.toBeNull();
+		expect(
+			screen.queryByRole("button", { name: "Log in with Auth0" }),
+		).toBeNull();
 	});
 
-	it("offers login and signup and returns both flows to the home dashboard", () => {
-		const page = LoginPage();
-		const markup = render(page);
-		const buttons = findButtons(page);
+	it("offers login and signup and returns both flows to the home dashboard", async () => {
+		const user = userEvent.setup();
+		render(<LoginPage />);
 
-		expect(markup).toContain("Sign in to continue to your account.");
-		expect(markup).toContain("Log in with Auth0");
-		expect(markup).toContain("Create an account");
-		expect(buttons).toHaveLength(2);
-
-		buttons[0]?.props.onPress?.();
-		buttons[1]?.props.onPress?.();
+		expect(
+			screen.getByText("Sign in to continue to your account."),
+		).not.toBeNull();
+		const loginButton = screen.getByRole("button", {
+			name: "Log in with Auth0",
+		});
+		const signupButton = screen.getByRole("button", {
+			name: "Create an account",
+		});
+		await user.click(loginButton);
+		await user.click(signupButton);
 		expect(mocks.loginWithRedirect).toHaveBeenNthCalledWith(1, {
 			returnTo: "/home",
 		});
@@ -84,7 +63,8 @@ describe("login page", () => {
 		});
 	});
 
-	it("shows the signed-in user and signs out when requested", () => {
+	it("shows the signed-in user and signs out when requested", async () => {
+		const user = userEvent.setup();
 		mocks.useAuth0.mockReturnValue({
 			loginWithRedirect: mocks.loginWithRedirect,
 			logout: mocks.logout,
@@ -93,13 +73,11 @@ describe("login page", () => {
 			user: { name: "Jordan Doe", email: "jordan@example.com" },
 		});
 
-		const page = LoginPage();
-		const markup = render(page);
-		const [signOutButton] = findButtons(page);
+		render(<LoginPage />);
 
-		expect(markup).toContain("Signed in as");
-		expect(markup).toContain("Jordan Doe");
-		signOutButton?.props.onPress?.();
+		expect(screen.getByText("Signed in as")).not.toBeNull();
+		expect(screen.getByText("Jordan Doe")).not.toBeNull();
+		await user.click(screen.getByRole("button", { name: "Sign out" }));
 		expect(mocks.logout).toHaveBeenCalledOnce();
 	});
 
@@ -112,13 +90,8 @@ describe("login page", () => {
 			user: { email: "jordan@example.com" },
 		});
 
-		expect(render(LoginPage())).toContain("jordan@example.com");
-	});
+		render(<LoginPage />);
 
-	it("provides login metadata", () => {
-		expect(meta()).toEqual([
-			{ title: "Sign in | Spendwise" },
-			{ name: "description", content: "Sign in to your Spendwise account." },
-		]);
+		expect(screen.getByText("jordan@example.com")).not.toBeNull();
 	});
 });

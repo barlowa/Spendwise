@@ -1,11 +1,9 @@
+import { createElement, type FormHTMLAttributes } from "react";
 import {
-	createElement,
-	type FormHTMLAttributes,
-	isValidElement,
-	type ReactElement,
-	type ReactNode,
-} from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+	createMemoryRouter,
+	RouterProvider,
+	useLoaderData,
+} from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import CreateTransactionForm from "~/features/transactions/components/CreateTransactionForm";
 import OverviewHeader from "~/features/transactions/components/OverviewHeader";
@@ -16,6 +14,7 @@ import {
 	TransactionsPage,
 } from "~/features/transactions/index";
 import type { Transaction } from "~/features/transactions/types";
+import { render, screen, userEvent } from "~/test/test-utils";
 import { currencyFormatter } from "~/utils/convert";
 
 const mocks = vi.hoisted(() => ({
@@ -52,32 +51,6 @@ vi.mock("react-router", async (importOriginal) => {
 	};
 });
 
-type ElementProps = {
-	children?: ReactNode;
-	disabled?: boolean;
-};
-
-function findElements(
-	node: ReactNode,
-	predicate: (element: ReactElement<ElementProps>) => boolean,
-): ReactElement<ElementProps>[] {
-	if (Array.isArray(node)) {
-		return node.flatMap((child) => findElements(child, predicate));
-	}
-
-	if (!isValidElement(node)) {
-		return [];
-	}
-
-	const element = node as ReactElement<ElementProps>;
-	const matches = predicate(element) ? [element] : [];
-	return [...matches, ...findElements(element.props.children, predicate)];
-}
-
-function render(node: ReactNode) {
-	return renderToStaticMarkup(node);
-}
-
 function makeTransaction(
 	id: number,
 	description = `Transaction ${id}`,
@@ -96,7 +69,7 @@ function makeRequest(fields: Record<string, string>) {
 	return new Request("http://localhost/transactions", {
 		method: "POST",
 		headers: { "Content-Type": "application/x-www-form-urlencoded" },
-		body: new URLSearchParams(fields),
+		body: new URLSearchParams(fields).toString(),
 	});
 }
 
@@ -104,6 +77,11 @@ async function submitAction(fields: Record<string, string>) {
 	return action({
 		request: makeRequest(fields),
 	} as Parameters<typeof action>[0]);
+}
+
+function TransactionsRouteFixture() {
+	const loaderData = useLoaderData<typeof loader>();
+	return <TransactionsPage loaderData={loaderData} actionData={undefined} />;
 }
 
 beforeEach(() => {
@@ -320,98 +298,180 @@ describe("transactions route action", () => {
 });
 
 describe("transactions page", () => {
+	it("loads and renders route data through a memory router", async () => {
+		mocks.get.mockResolvedValue({
+			data: [makeTransaction(9, "Weekend market", "42.00")],
+		});
+		const router = createMemoryRouter(
+			[
+				{
+					path: "/transactions",
+					loader,
+					Component: TransactionsRouteFixture,
+				},
+			],
+			{ initialEntries: ["/transactions"] },
+		);
+
+		render(<RouterProvider router={router} />);
+
+		expect(await screen.findByDisplayValue("Weekend market")).not.toBeNull();
+		expect(mocks.requireSession).toHaveBeenCalledOnce();
+		expect(mocks.get).toHaveBeenCalledWith("/transactions");
+	});
+
 	it("renders the summary, create form, and populated transaction table", () => {
-		const markup = render(
-			TransactionsPage({
-				loaderData: {
+		render(
+			<TransactionsPage
+				loaderData={{
 					transactions: [
 						makeTransaction(1, "Groceries", "10.25"),
 						makeTransaction(2, "Coffee", "6.25"),
 					],
-				},
-				actionData: undefined,
-			}),
+				}}
+				actionData={undefined}
+			/>,
 		);
 
-		expect(markup).toContain("Transactions");
-		expect(markup).toContain(currencyFormatter.format(16.5));
-		expect(markup).toContain("Add a transaction");
-		expect(markup).toContain("Recent activity");
-		expect(markup).toContain("2 transactions");
-		expect(markup).toContain("Groceries");
-		expect(markup).toContain("Coffee");
+		expect(
+			screen.getByRole("heading", { name: "Transactions", level: 1 }),
+		).not.toBeNull();
+		expect(screen.getByText(currencyFormatter.format(16.5))).not.toBeNull();
+		expect(screen.getByText("Add a transaction")).not.toBeNull();
+		expect(screen.getByText("Recent activity")).not.toBeNull();
+		expect(screen.getByText("2 transactions")).not.toBeNull();
+		expect(screen.getByDisplayValue("Groceries")).not.toBeNull();
+		expect(screen.getByDisplayValue("Coffee")).not.toBeNull();
 	});
 
 	it("shows action errors accessibly", () => {
-		const markup = render(
-			TransactionsPage({
-				loaderData: { transactions: [] },
-				actionData: {
+		render(
+			<TransactionsPage
+				loaderData={{ transactions: [] }}
+				actionData={{
 					success: false,
 					error: "Enter an amount greater than zero.",
-				},
-			}),
+				}}
+			/>,
 		);
 
-		expect(markup).toContain('role="alert"');
-		expect(markup).toContain("Enter an amount greater than zero.");
+		expect(screen.getByRole("alert").textContent).toContain(
+			"Enter an amount greater than zero.",
+		);
 	});
 
-	it("disables transaction controls while submitting", () => {
+	it("disables create, save, and delete controls while submitting", () => {
 		mocks.navigation.mockReturnValue({ state: "submitting" });
-		const markup = render(
-			TransactionsPage({
-				loaderData: { transactions: [makeTransaction(1)] },
-				actionData: undefined,
-			}),
+		render(
+			<TransactionsPage
+				loaderData={{ transactions: [makeTransaction(1)] }}
+				actionData={undefined}
+			/>,
 		);
 
-		expect(markup).toContain("disabled");
+		expect(
+			screen
+				.getByRole("button", { name: "Add transaction" })
+				.hasAttribute("disabled"),
+		).toBe(true);
+		expect(
+			screen.getByRole("button", { name: "Save" }).hasAttribute("disabled"),
+		).toBe(true);
+		expect(
+			screen
+				.getByRole("button", { name: "Delete transaction 1" })
+				.hasAttribute("disabled"),
+		).toBe(true);
 	});
 
 	it("renders an empty table state when no transactions exist", () => {
-		const markup = render(
-			TransactionsPage({
-				loaderData: { transactions: [] },
-				actionData: undefined,
-			}),
+		render(
+			<TransactionsPage
+				loaderData={{ transactions: [] }}
+				actionData={undefined}
+			/>,
 		);
 
-		expect(markup).toContain("No transactions yet");
-		expect(markup).toContain("0 transactions");
+		expect(screen.getByText("No transactions yet")).not.toBeNull();
+		expect(screen.getByText("0 transactions")).not.toBeNull();
 	});
 });
 
 describe("transactions page components", () => {
 	it("shows the amount total in the overview header", () => {
-		const markup = render(
-			OverviewHeader({
-				transactions: [
+		render(
+			<OverviewHeader
+				transactions={[
 					makeTransaction(1, "Groceries", "10.25"),
 					makeTransaction(2, "Coffee", "6.25"),
-				],
-			}),
+				]}
+			/>,
 		);
 
-		expect(markup).toContain("Total transactions");
-		expect(markup).toContain(currencyFormatter.format(16.5));
+		expect(screen.getByText("Total transactions")).not.toBeNull();
+		expect(screen.getByText(currencyFormatter.format(16.5))).not.toBeNull();
 	});
 
-	it("renders the create form with the expected fields and submit action", () => {
-		const markup = render(CreateTransactionForm({ isSubmitting: false }));
+	it("renders the create form with accessible fields and submit action", () => {
+		render(<CreateTransactionForm isSubmitting={false} />);
 
-		expect(markup).toContain('name="_intent" value="create"');
-		expect(markup).toContain("Description");
-		expect(markup).toContain("Amount");
-		expect(markup).toContain("Add transaction");
+		expect(screen.getByLabelText("Description")).not.toBeNull();
+		expect(screen.getByLabelText("Amount")).not.toBeNull();
+		expect(
+			screen.getByRole("button", { name: "Add transaction" }),
+		).not.toBeNull();
+		expect(
+			document.querySelector<HTMLInputElement>('input[name="_intent"]')?.value,
+		).toBe("create");
+	});
+
+	it("accepts user input in the create form", async () => {
+		const user = userEvent.setup();
+		render(<CreateTransactionForm isSubmitting={false} />);
+
+		await user.type(screen.getByLabelText("Description"), "Train ticket");
+		await user.type(screen.getByLabelText("Amount"), "15.00");
+
+		expect(screen.getByDisplayValue("Train ticket")).not.toBeNull();
+		expect(screen.getByDisplayValue("15.00")).not.toBeNull();
+	});
+
+	it("renders transaction row actions connected to their matching forms", () => {
+		render(
+			<TransactionsTable
+				transactions={[makeTransaction(7, "Train ticket", "15.00")]}
+				isSubmitting={false}
+			/>,
+		);
+
+		expect(
+			screen
+				.getByRole("textbox", {
+					name: "Description for transaction 7",
+				})
+				.getAttribute("form"),
+		).toBe("update-7");
+		expect(
+			screen
+				.getByRole("spinbutton", {
+					name: "Amount for transaction 7",
+				})
+				.getAttribute("form"),
+		).toBe("update-7");
+		expect(
+			screen.getByRole("button", { name: "Save" }).getAttribute("form"),
+		).toBe("update-7");
+		expect(
+			screen.getByRole("button", { name: "Delete transaction 7" }),
+		).not.toBeNull();
 	});
 
 	it("renders an empty state in the transaction table", () => {
-		const markup = render(
-			TransactionsTable({ transactions: [], isSubmitting: false }),
-		);
+		render(<TransactionsTable transactions={[]} isSubmitting={false} />);
 
-		expect(markup).toContain("No transactions yet");
-		expect(markup).toContain("Add your first transaction above.");
+		expect(screen.getByText("No transactions yet")).not.toBeNull();
+		expect(
+			screen.getByText("Add your first transaction above."),
+		).not.toBeNull();
 	});
 });

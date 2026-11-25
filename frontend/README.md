@@ -42,6 +42,17 @@ Create a production build:
 npm run build
 ```
 
+## Testing
+
+Run the frontend test suite from this directory:
+
+```bash
+npm test
+```
+
+Tests use Vitest and React Testing Library in jsdom. Pass a test file path to
+run a focused suite, for example `npm test -- app/features/home/home.test.tsx`.
+
 ## Deployment
 
 ### Docker Deployment
