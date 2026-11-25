@@ -1,9 +1,9 @@
 import { useUser } from "@auth0/auth0-react-router";
 import { Card } from "@heroui/react";
 import { HiOutlineIdentification } from "react-icons/hi2";
-import { DetailRow } from "~/features/profile/components/DetailRow";
+import DetailRow from "~/features/profile/components/DetailRow";
 
-export function DetailsCard() {
+export default function DetailsCard() {
 	const user = useUser();
 
 	const details = [

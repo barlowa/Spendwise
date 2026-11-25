@@ -23,7 +23,7 @@ const getInitials = (name: string) => {
 	return initials.toUpperCase() || "SW";
 };
 
-export function SummaryCard({
+export default function SummaryCard({
 	name,
 	email,
 	picture,

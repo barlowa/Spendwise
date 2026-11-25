@@ -2,10 +2,10 @@ import { useUser } from "@auth0/auth0-react-router";
 import { requireSession } from "@auth0/auth0-react-router/server";
 import { HiBanknotes } from "react-icons/hi2";
 import Link from "~/components/Link";
+import SecurityCard from "~/features/profile//components/SecurityCard";
+import DetailsCard from "~/features/profile/components/DetailsCard";
+import SummaryCard from "~/features/profile/components/SummaryCard";
 import type { Route } from "./+types";
-import { DetailsCard } from "./components/DetailsCard";
-import { SecurityCard } from "./components/SecurityCard";
-import { SummaryCard } from "./components/SummaryCard";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
 	await requireSession(request);

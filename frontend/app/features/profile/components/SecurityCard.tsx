@@ -1,7 +1,7 @@
 import { Card } from "@heroui/react";
 import { HiOutlineShieldCheck } from "react-icons/hi2";
 
-export function SecurityCard() {
+export default function SecurityCard() {
 	return (
 		<Card className="h-fit rounded-3xl shadow-sm border border-border/80">
 			<Card.Content>
